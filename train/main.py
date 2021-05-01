@@ -31,7 +31,7 @@ np.random.seed(seed)
 def load_data(datasetName, winSize):
     X_TRAIN, Y_TRAIN, _, listActivities = loadDataCase2(datasetName, winSize, "train")
     X_TEST, Y_TEST, _, listActivities = loadDataCase2(datasetName, winSize, "test")
-    X_TRAIN, X_VALIDATION, Y_TRAIN, Y_VALIDATION = train_test_split(X_TRAIN, Y_TRAIN, test_size=0.2, random_state=seed)
+    X_TRAIN, X_VALIDATION, Y_TRAIN, Y_VALIDATION = train_test_split(X_TRAIN, Y_TRAIN, test_size=0.2, random_state=seed, stratify=Y_TRAIN)
     return X_TRAIN, Y_TRAIN, X_VALIDATION, Y_VALIDATION, X_TEST, Y_TEST, listActivities
 
 def evaluate_model(model, testX, testy, batch_size):

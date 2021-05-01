@@ -93,12 +93,6 @@ def sequencesToSentences(activitySequences):
 		label_sentences.append(activitySequences[i].activity.values[0])
 	return sentences, label_sentences
 
-def getData(datasetName):
-    X = np.load('./npy/' + datasetName + '-x.npy', allow_pickle=True)
-    Y = np.load('./npy/' + datasetName + '-y.npy', allow_pickle=True)
-    dictActivities = np.load('./npy/' + datasetName + '-labels.npy', allow_pickle=True).item()
-    return X, Y, dictActivities
-
 def padding_sequence(sequence, winSize):
     if winSize > len(sequence):
         return sequence[0:len(sequence)]
@@ -133,7 +127,7 @@ if __name__ == '__main__':
   #==============================
   #     phải cắt từ chỗ này
   #==============================
-  indexed_sentences_train, indexed_sentences_test, label_sentences_train, label_sentences_test = train_test_split(indexed_sentences, label_sentences, test_size=0.2, random_state=7)
+  indexed_sentences_train, indexed_sentences_test, label_sentences_train, label_sentences_test = train_test_split(indexed_sentences, label_sentences, test_size=0.2, random_state=7, stratify=label_sentences)
   print("STEP 6: split indexed sentences in sliding windows")
   # Xử lý kiểu 1
   if args.winSize_1 != "":
