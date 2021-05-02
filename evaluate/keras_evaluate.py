@@ -1,4 +1,6 @@
-from models import get_model
+import sys, os
+sys.path.append(os.getcwd())
+from model.keras_model import get_model
 from sklearn.metrics import confusion_matrix, classification_report
 import numpy as np 
 import data

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import csv, os, sys 
 sys.path.append(os.getcwd())
-print(sys.path)
+# print(sys.path)
 from datetime import datetime
 import numpy as np
 from keras.callbacks import ModelCheckpoint, CSVLogger
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     cvscores = []
     Y = label_encoder.fit_transform(Y)
     k = 0
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=seed)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=seed, stratify=Y)
     print('X_train shape:', X_train.shape)
     print('y_train shape:', Y_train.shape)
     if 'Ensemble' in args_model:
@@ -51,7 +51,14 @@ if __name__ == '__main__':
         save_best_only=True)
     # train the model
     print('Begin training ...')
-    class_weight = compute_class_weight('balanced', np.unique(Y),Y)  # use as optional argument in the fit function
-    # model.fit(X_train_input, Y_train, validation_split=0.2, epochs=1, batch_size=64, verbose=1)
-    model.fit(X_train_input, Y_train, validation_split=0.2, epochs=epochs, batch_size=64, verbose=1,
+    # compute_class_weight
+    class_weight = {}
+    num_class = len(dictActivities)
+    num_sample = len(Y_train)
+    for i in set(Y_train):
+        class_weight[i] = num_sample/num_class/list(Y_train).count(i)
+    print("class_weight: ", class_weight)
+    # class_weight = compute_class_weight('balanced', np.unique(Y), Y)  # use as optional argument in the fit function
+    model.fit(X_train_input, Y_train, validation_split=0.2, epochs=1, batch_size=64, verbose=1)
+    model.fit(X_train_input, Y_train, validation_data = (X_test_input, Y_test), epochs=epochs, batch_size=128, verbose=1, class_weight = class_weight,
               callbacks=[csv_logger, model_checkpoint])
