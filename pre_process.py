@@ -145,15 +145,17 @@ if __name__ == '__main__':
         tokenizer.fit_on_texts(sentences)
         print("tokenizer: ", tokenizer)
         word_index = tokenizer.word_index
-        tokenizer.word_index = {'m009on': 1, 'm009off': 2, 'm020on': 3, 'm020off': 4, 'm019off': 5, 'm019on': 6}
-        #   print(word_index)
-        #   save_dict("./datasets/word_id/{}.pickle".format(args.dataset_name), word_index)
+        # print(word_index)
+        if not os.path.isdir("./datasets/word_id"):
+            os.makedirs("./datasets/word_id")
+        save_dict("./datasets/word_id/{}.pickle".format(args.dataset_name), word_index)
         indexed_sentences = tokenizer.texts_to_sequences(sentences)
         print("number of sequence:", len(indexed_sentences), len(label_sentences))
         #==============================
         #     phải cắt từ chỗ này
         #==============================
         indexed_sentences_train, indexed_sentences_test, label_sentences_train, label_sentences_test = train_test_split(indexed_sentences, label_sentences, test_size=0.2, random_state=7, stratify=label_sentences)
+        print("label_sentences_test", len(label_sentences_test), len(set(label_sentences_test)))
         #   np.save("./datasets/preprocess_raw/{}_X_train.npy".format(args.dataset_name), np.array(indexed_sentences_train))
         #   np.save("./datasets/preprocess_raw/{}_Y_train.npy".format(args.dataset_name), label_sentences_train)
         #   np.save("./datasets/preprocess_raw/{}_X_test.npy".format(args.dataset_name), np.array(indexed_sentences_test))

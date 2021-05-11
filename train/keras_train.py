@@ -13,16 +13,20 @@ label_encoder = LabelEncoder()
 from sklearn.model_selection import train_test_split
 from model.keras_model import get_model
 import data
-import tensorflow as tf
+import argparse
 
+p = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description='')
+p.add_argument('--n', dest='dataset_name', action='store', default='cairo', help='input', required = False)
+p.add_argument('--w', dest='winSize', action='store', default='', help='input', required = False)
+args = p.parse_args()
 seed = 7
 units = 64
-epochs = 100
+epochs = 1
 args_model = "biLSTM"
-datasetName = "cairo"
-maxLength = 2000
+datasetName = args.dataset_name
+maxLength = int(args.winSize)
 if __name__ == '__main__':
-    X, Y, dictActivities = data.loadDataCase1(datasetName, maxLength, "train")
+    X, Y, dictActivities, word_id = data.loadDataCase1(datasetName, maxLength, "train")
     print("Activities: ", dictActivities)
     cvaccuracy = []
     cvscores = []
@@ -32,16 +36,15 @@ if __name__ == '__main__':
     print('X_train shape:', X_train.shape)
     print('y_train shape:', Y_train.shape)
     if 'Ensemble' in args_model:
-        input_dim = len(X_train)
         X_train_input = [X_train, X_train]
         X_test_input = [X_test, X_test]
     else:
-        input_dim = len(X_train)
         X_train_input = X_train
         X_test_input = X_test
     no_activities = len(dictActivities)
+    input_dim = len(word_id)
     model = get_model(args_model, input_dim, no_activities, maxLength)
-    model.load_weights("logging/log_case_1/training/model/biLSTM-cairo-20210503-034847.h5")
+    # model.load_weights("model/model_1-cairo-20210409-103533.h5")
     modelname = model.name
     # checkpoint callback
     currenttime = datetime.utcnow().strftime('%Y%m%d-%H%M%S')
@@ -60,5 +63,5 @@ if __name__ == '__main__':
         class_weight[i] = num_sample/num_class/list(Y_train).count(i)
     print("class_weight: ", class_weight)
     # class_weight = compute_class_weight('balanced', np.unique(Y), Y)  # use as optional argument in the fit function
-    with tf.device("/gpu:0"):
-      model.fit(X_train_input, Y_train, validation_data = (X_test_input, Y_test), epochs=epochs, batch_size=256, verbose=1, class_weight = class_weight, callbacks=[csv_logger, model_checkpoint])
+    model.fit(X_train_input, Y_train, validation_data = (X_test_input, Y_test), epochs=epochs, batch_size=128, verbose=1, class_weight = class_weight,
+              callbacks=[csv_logger, model_checkpoint])

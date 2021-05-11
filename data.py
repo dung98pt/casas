@@ -6,9 +6,11 @@ def loadDataCase1(datasetName, winSize=2000, use="train"):
     X = np.load('datasets/preprocess_cate1/{}_{}_X_{}.npy'.format(datasetName, winSize, use), allow_pickle=True)
     Y = np.load('datasets/preprocess_cate1/{}_{}_Y_{}.npy'.format(datasetName, winSize, use), allow_pickle=True)
     activities_dict_path = "./datasets/activities_dictionary/{}_activity_list.pickle".format(datasetName)
+    word_id_path = "./datasets/word_id/{}.pickle".format(datasetName)
+    word_id = load_dict(word_id_path)
     dictActivities = load_dict(activities_dict_path)
-    print(X.shape, len(Y), dictActivities)
-    return X, Y, dictActivities
+    print(X.shape, len(Y), len(dictActivities), len(word_id))
+    return X, Y, dictActivities, word_id
 
 def loadDataRaw(datasetName, use="train"):
     X = np.load('datasets/preprocess_raw/{}_X_{}.npy'.format(datasetName, use), allow_pickle=True)
