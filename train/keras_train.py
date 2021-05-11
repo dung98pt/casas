@@ -21,7 +21,7 @@ p.add_argument('--w', dest='winSize', action='store', default='', help='input', 
 args = p.parse_args()
 seed = 7
 units = 64
-epochs = 1
+epochs = 100
 args_model = "biLSTM"
 datasetName = args.dataset_name
 maxLength = int(args.winSize)
