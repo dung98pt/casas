@@ -7,6 +7,8 @@ import data
 import csv
 from datetime import datetime
 from keras.utils.vis_utils import plot_model
+from sklearn.metrics import balanced_accuracy_score
+from data import loadDataCase1
 
 def load_test_data(dataset_name):
   X_test = np.load("test_data/{}-x.npy".format(dataset_name), allow_pickle=True)
@@ -21,14 +23,16 @@ def evaluate_model(model_path):
   model_name = model_path.split("/")[-1]
   dataset = model_name.split("-")[1]
   model_structure_name = model_name.split("-")[0]
-  X_test, Y_test, dictActivities, input_dim = load_test_data(dataset)
+  X_test, Y_test, dictActivities = loadDataCase1(dataset, 2000, "test")
+  print(len(dictActivities),"vvvvvvvvvvvvv")
+  input_dim = 8272
   if "Ensemble" in model_name:
     X_test_input = [X_test, X_test]
   else:
     X_test_input = X_test
-  model = get_model(model_structure_name, input_dim, len(dictActivities))
+  model = get_model(model_structure_name, input_dim, len(dictActivities), 2000)
   model.load_weights(model_path)
-  plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+  # plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
   modelname = model.name
   target_names = sorted(dictActivities, key=dictActivities.get)
   print('Begin testing ...')
@@ -40,12 +44,19 @@ def evaluate_model(model_path):
   target_names = sorted(dictActivities, key=dictActivities.get)
 
   classes = model.predict_classes(X_test_input, batch_size=64)
+  balanced_score = balanced_accuracy_score(Y_test, classes)
+  print("balanced_accuracy_score:", balanced_score)
   print(classification_report(list(Y_test), classes, target_names=target_names))
   print('Confusion matrix:')
   labels = list(dictActivities.values())
   cvaccuracy.append(scores[1] * 100)
   cvscores.append(scores)
-  print(confusion_matrix(list(Y_test), classes, labels))
+  confuse_matrix = confusion_matrix(list(Y_test), classes, labels)
+  print(confuse_matrix)
+  text_file = open("score/confuse.txt", "w")
+  text_file.write("{}".format(confuse_matrix))
+  text_file.write("{}".format(classification_report(list(Y_test), classes, target_names=target_names)))
+  
   print('{:.2f}% (+/- {:.2f}%)'.format(np.mean(cvaccuracy), np.std(cvaccuracy)))
 
   currenttime = datetime.utcnow().strftime('%Y%m%d-%H%M%S')
