@@ -1,22 +1,30 @@
 import numpy as np 
-import pickle
+from utilities import load_dict, label_encode
 import os
 
 def loadDataCase1(datasetName, winSize=2000, use="train"):
     X = np.load('datasets/preprocess_cate1/{}_{}_X_{}.npy'.format(datasetName, winSize, use), allow_pickle=True)
     Y = np.load('datasets/preprocess_cate1/{}_{}_Y_{}.npy'.format(datasetName, winSize, use), allow_pickle=True)
-    pickle_in = open("./datasets/activities_dictionary/{}_activity_list.pickle".format(datasetName),"rb")
-    dictActivities = pickle.load(pickle_in)
+    activities_dict_path = "./datasets/activities_dictionary/{}_activity_list.pickle".format(datasetName)
+    dictActivities = load_dict(activities_dict_path)
     print(X.shape, len(Y), dictActivities)
     return X, Y, dictActivities
+
+def loadDataRaw(datasetName, use="train"):
+    X = np.load('datasets/preprocess_raw/{}_X_{}.npy'.format(datasetName, use), allow_pickle=True)
+    Y = np.load('datasets/preprocess_raw/{}_Y_{}.npy'.format(datasetName, use), allow_pickle=True)
+    word_id_path = "./datasets/word_id/{}.pickle".format(datasetName)
+    word_id = load_dict(word_id_path)
+    print(X.shape, len(Y), len(word_id))
+    return X, Y, word_id
 
 seed = 7
 test_size = 0.3
 np.random.seed(seed)
 
 def loadDataCase2(datasetName, winSize=100, use="train"):
-    pickle_in = open("./datasets/activities_dictionary/{}_activity_list.pickle".format(datasetName),"rb")
-    dictActivities = pickle.load(pickle_in)
+    activities_dict_path = "./datasets/activities_dictionary/{}_activity_list.pickle".format(datasetName)
+    dictActivities = load_dict(activities_dict_path)
     *listActivities, = dictActivities
     X = np.load('datasets/preprocess_cate2/{}_{}_X_{}.npy'.format(datasetName, winSize, use), allow_pickle=True)
     Y = np.load('datasets/preprocess_cate2/{}_{}_Y_{}.npy'.format(datasetName, winSize, use), allow_pickle=True)
