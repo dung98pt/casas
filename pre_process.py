@@ -4,6 +4,7 @@ import argparse
 import numpy as np
 import pandas as pd
 import pickle
+from utilities import save_dict
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.text import Tokenizer
@@ -23,7 +24,7 @@ def clean_and_prepare(df):
 	df['activity'] = df['activity'].replace("begin", None)
 	return df
 
-def save_activity_dict(df, input_file):
+def save_activity_dict(input_file, dictActivities):
     # lưu vào đường dẫn ./datasets/activities_dictionary
 	if "milan" in input_file:
 		filename = "./datasets/activities_dictionary/milan_activity_list.pickle"
@@ -31,11 +32,6 @@ def save_activity_dict(df, input_file):
 		filename = "./datasets/activities_dictionary/aruba_activity_list.pickle"
 	if "cairo" in input_file:
 		filename = "./datasets/activities_dictionary/cairo_activity_list.pickle"
-	activities = df.activity.unique()
-	activities.sort()
-	dictActivities = {}
-	for i, activity in enumerate(activities):
-		dictActivities[activity] = i
 	pickle_out = open(filename,"wb")
 	pickle.dump(dictActivities, pickle_out)
 	pickle_out.close()
@@ -100,82 +96,116 @@ def padding_sequence(sequence, winSize):
         return sequence[:winSize]
     # cho xử lý kiểu 1
 if __name__ == '__main__':
-  p = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description='')
-  p.add_argument('--n', dest='dataset_name', action='store', default='cairo', help='input', required = False)
-  p.add_argument('--w1', dest='winSize_1', action='store', default='', help='input', required = False)
-  p.add_argument('--w2', dest='winSize_2', action='store', default='', help='input', required = False)
-  args = p.parse_args()
-  input_file = "./datasets/{}/data".format(args.dataset_name)
-  print("STEP 1: Load dataset")
-  df = load_raw_dataset(input_file)
-  print("STEP 2: prepare dataset")
-  df = clean_and_prepare(df)
-  save_activity_dict(df,input_file)
-  ## Segment dataset in sequence of activity ##
-  print("STEP 3: segment dataset in sequence of activity")
-  activitySequences = segment_activities(df)
-  ## Transform sequences of activity in sentences ##
-  print("STEP 4: transform sequences of activity in sentences")
-  sentences, label_sentences = sequencesToSentences(activitySequences)
-  ## Indexization ##
-  print("STEP 5: sentences indexization")
-  tokenizer = Tokenizer(filters='!"#$%&()*+,-/:;<=>?@[\\]^_`{|}~\t\n')
-  tokenizer.fit_on_texts(sentences)
-  word_index = tokenizer.word_index
-  indexed_sentences = tokenizer.texts_to_sequences(sentences)
-  print("number of sequence:", len(indexed_sentences), len(label_sentences))
-  #==============================
-  #     phải cắt từ chỗ này
-  #==============================
-  indexed_sentences_train, indexed_sentences_test, label_sentences_train, label_sentences_test = train_test_split(indexed_sentences, label_sentences, test_size=0.2, random_state=7, stratify=label_sentences)
-  print("STEP 6: split indexed sentences in sliding windows")
-  # Xử lý kiểu 1
-  if args.winSize_1 != "":
-    print("   --> Xu ly kieu 1")
-    winSize_1 = int(args.winSize_1)
-    x_train = []
-    x_test = []
-    for i in indexed_sentences_train:
-        x_train.append(padding_sequence(i, winSize_1))
-    for i in indexed_sentences_test:
-        x_test.append(padding_sequence(i, winSize_1))
-    x_train = pad_sequences(x_train)
-    x_test = pad_sequences(x_test)
-    np.save("./datasets/preprocess_cate1/{}_{}_X_train.npy".format(args.dataset_name, winSize_1), np.array(x_train))
-    np.save("./datasets/preprocess_cate1/{}_{}_Y_train.npy".format(args.dataset_name, winSize_1), label_sentences_train)
-    np.save("./datasets/preprocess_cate1/{}_{}_X_test.npy".format(args.dataset_name, winSize_1), np.array(x_test))
-    np.save("./datasets/preprocess_cate1/{}_{}_Y_test.npy".format(args.dataset_name, winSize_1), label_sentences_test)
-  
-  # Xử lý kiểu 2
-    if args.winSize_2 != "":
-        print("   --> Xu ly kieu 2")
-        winSize_2 = int(args.winSize_2)
-        # Split in sliding windows ##
-        X_windowed_train = []
-        Y_windowed_train = []
-        X_windowed_test = []
-        Y_windowed_test = []
-        step = 1
-        # train
-        for i,s in enumerate(indexed_sentences_train):
-            chunks = slidingWindow(s,winSize_2,step)
-            for chunk in chunks:
-                if len(chunk)>0:
-                    X_windowed_train.append(chunk)
-                    Y_windowed_train.append(label_sentences_train[i])
-        # test
-        for i,s in enumerate(indexed_sentences_test):
-            chunks = slidingWindow(s,winSize_2,step)
-            for chunk in chunks:
-                if len(chunk)>0:
-                    X_windowed_test.append(chunk)
-                    Y_windowed_test.append(label_sentences_test[i])
-        ## Pad windows ##
-        print("STEP 7: pad sliding windows")
-        X_windowed_train = pad_sequences(X_windowed_train)
-        X_windowed_test = pad_sequences(X_windowed_test)
-        ## Save files ##
-        np.save("./datasets/preprocess_cate2/{}_{}_X_train.npy".format(args.dataset_name, winSize_2), np.array(X_windowed_train))
-        np.save("./datasets/preprocess_cate2/{}_{}_Y_train.npy".format(args.dataset_name, winSize_2), Y_windowed_train)
-        np.save("./datasets/preprocess_cate2/{}_{}_X_test.npy".format(args.dataset_name,  winSize_2), np.array(X_windowed_test))
-        np.save("./datasets/preprocess_cate2/{}_{}_Y_test.npy".format(args.dataset_name,  winSize_2), Y_windowed_test)
+    p = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description='')
+    p.add_argument('--n', dest='dataset_name', action='store', default='cairo', help='input', required = False)
+    p.add_argument('--t', dest='cut_test', action='store', default=True, help='input', required = True)
+    p.add_argument('--w1', dest='winSize_1', action='store', default='', help='input', required = False)
+    p.add_argument('--w2', dest='winSize_2', action='store', default='', help='input', required = False)
+    args = p.parse_args()
+    input_file = "./datasets/{}/data".format(args.dataset_name)
+    print("STEP 1: Load dataset")
+    df = load_raw_dataset(input_file)
+    print("STEP 2: prepare dataset")
+    df = clean_and_prepare(df)
+    ## Segment dataset in sequence of activity ##
+    print("STEP 3: segment dataset in sequence of activity")
+    activitySequences = segment_activities(df)
+    ## Transform sequences of activity in sentences ##
+    print("STEP 4: transform sequences of activity in sentences")
+    sentences, label_sentences = sequencesToSentences(activitySequences)
+    """
+    Đoạn này vẫn theo thứ tự nè, xử đẹp từ đây nha
+    """
+    dict_activities = {}
+    for i, activity in enumerate(set(label_sentences)):
+        dict_activities[activity] = i
+    save_activity_dict(args.dataset_name, dict_activities)
+    print(dict_activities)
+    label_sentences = [dict_activities[i] for i in label_sentences]
+    n_sample = len(sentences)
+    n_activity = len(set(label_sentences))
+    # for i in list(set(label_sentences)):
+        # print(i, label_sentences.count(i), label_sentences.count(i)*100/n_sample)
+    print("n_sample: ", n_sample, n_activity)  
+    # num_test_sample = 100
+    # for i in range(n_sample-num_test_sample):
+    #     test_sample = label_sentences[i:i+num_test_sample]
+    #     if len(set(test_sample)) < n_activity:
+    #         continue
+    #     else:
+    #         scores = []
+    #         for j in list(set(label_sentences)):
+    #             scores.append(test_sample.count(j)*100/num_test_sample)
+    #         print("===================================>>>   ", i, np.mean(scores))
+
+    if args.cut_test=="False":
+        ## Indexization ##
+        print("STEP 5: sentences indexization")
+        tokenizer = Tokenizer(filters='!"#$%&()*+,-/:;<=>?@[\\]^_`{|}~\t\n')
+        tokenizer.fit_on_texts(sentences)
+        print("tokenizer: ", tokenizer)
+        word_index = tokenizer.word_index
+        tokenizer.word_index = {'m009on': 1, 'm009off': 2, 'm020on': 3, 'm020off': 4, 'm019off': 5, 'm019on': 6}
+        #   print(word_index)
+        #   save_dict("./datasets/word_id/{}.pickle".format(args.dataset_name), word_index)
+        indexed_sentences = tokenizer.texts_to_sequences(sentences)
+        print("number of sequence:", len(indexed_sentences), len(label_sentences))
+        #==============================
+        #     phải cắt từ chỗ này
+        #==============================
+        indexed_sentences_train, indexed_sentences_test, label_sentences_train, label_sentences_test = train_test_split(indexed_sentences, label_sentences, test_size=0.2, random_state=7, stratify=label_sentences)
+        #   np.save("./datasets/preprocess_raw/{}_X_train.npy".format(args.dataset_name), np.array(indexed_sentences_train))
+        #   np.save("./datasets/preprocess_raw/{}_Y_train.npy".format(args.dataset_name), label_sentences_train)
+        #   np.save("./datasets/preprocess_raw/{}_X_test.npy".format(args.dataset_name), np.array(indexed_sentences_test))
+        #   np.save("./datasets/preprocess_raw/{}_Y_test.npy".format(args.dataset_name), label_sentences_test)
+        print("STEP 6: split indexed sentences in sliding windows")
+        # Xử lý kiểu 1
+        if args.winSize_1 != "":
+            print("   --> Xu ly kieu 1")
+            winSize_1 = int(args.winSize_1)
+            x_train = []
+            x_test = []
+            for i in indexed_sentences_train:
+                x_train.append(padding_sequence(i, winSize_1))
+            for i in indexed_sentences_test:
+                x_test.append(padding_sequence(i, winSize_1))
+            x_train = pad_sequences(x_train)
+            x_test = pad_sequences(x_test)
+            np.save("./datasets/preprocess_cate1/{}_{}_X_train.npy".format(args.dataset_name, winSize_1), np.array(x_train))
+            np.save("./datasets/preprocess_cate1/{}_{}_Y_train.npy".format(args.dataset_name, winSize_1), label_sentences_train)
+            np.save("./datasets/preprocess_cate1/{}_{}_X_test.npy".format(args.dataset_name, winSize_1), np.array(x_test))
+            np.save("./datasets/preprocess_cate1/{}_{}_Y_test.npy".format(args.dataset_name, winSize_1), label_sentences_test)
+
+        # Xử lý kiểu 2
+        if args.winSize_2 != "":
+            print("   --> Xu ly kieu 2")
+            winSize_2 = int(args.winSize_2)
+            # Split in sliding windows ##
+            X_windowed_train = []
+            Y_windowed_train = []
+            X_windowed_test = []
+            Y_windowed_test = []
+            step = 1
+            # train
+            for i,s in enumerate(indexed_sentences_train):
+                chunks = slidingWindow(s,winSize_2,step)
+                for chunk in chunks:
+                    if len(chunk)>0:
+                        X_windowed_train.append(chunk)
+                        Y_windowed_train.append(label_sentences_train[i])
+            # test
+            for i,s in enumerate(indexed_sentences_test):
+                chunks = slidingWindow(s,winSize_2,step)
+                for chunk in chunks:
+                    if len(chunk)>0:
+                        X_windowed_test.append(chunk)
+                        Y_windowed_test.append(label_sentences_test[i])
+            ## Pad windows ##
+            print("STEP 7: pad sliding windows")
+            X_windowed_train = pad_sequences(X_windowed_train)
+            X_windowed_test = pad_sequences(X_windowed_test)
+            ## Save files ##
+            np.save("./datasets/preprocess_cate2/{}_{}_X_train.npy".format(args.dataset_name, winSize_2), np.array(X_windowed_train))
+            np.save("./datasets/preprocess_cate2/{}_{}_Y_train.npy".format(args.dataset_name, winSize_2), Y_windowed_train)
+            np.save("./datasets/preprocess_cate2/{}_{}_X_test.npy".format(args.dataset_name,  winSize_2), np.array(X_windowed_test))
+            np.save("./datasets/preprocess_cate2/{}_{}_Y_test.npy".format(args.dataset_name,  winSize_2), Y_windowed_test)
