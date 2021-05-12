@@ -18,6 +18,7 @@ import argparse
 p = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description='')
 p.add_argument('--n', dest='dataset_name', action='store', default='cairo', help='input', required = False)
 p.add_argument('--w', dest='winSize', action='store', default='', help='input', required = False)
+p.add_argument('--l', dest='path_weight', action='store', default='', help='input', required = False)
 args = p.parse_args()
 seed = 7
 units = 64
@@ -25,13 +26,12 @@ epochs = 100
 args_model = "biLSTM"
 datasetName = args.dataset_name
 maxLength = int(args.winSize)
+path_weight = args.path_weight
 if __name__ == '__main__':
     X, Y, dictActivities, word_id = data.loadDataCase1(datasetName, maxLength, "train")
     print("Activities: ", dictActivities)
     cvaccuracy = []
     cvscores = []
-    Y = label_encoder.fit_transform(Y)
-    k = 0
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=seed, stratify=Y)
     print('X_train shape:', X_train.shape)
     print('y_train shape:', Y_train.shape)
@@ -42,9 +42,12 @@ if __name__ == '__main__':
         X_train_input = X_train
         X_test_input = X_test
     no_activities = len(dictActivities)
-    input_dim = len(word_id)
+    input_dim = len(word_id) + 1
+    print(len(word_id), set(Y_test))
     model = get_model(args_model, input_dim, no_activities, maxLength)
-    # model.load_weights("model/model_1-cairo-20210409-103533.h5")
+    if os.path.isfile(path_weight):
+      model.load_weights(path_weight)
+      print("Weight model at {} was loaded!".format(path_weight))
     modelname = model.name
     # checkpoint callback
     currenttime = datetime.utcnow().strftime('%Y%m%d-%H%M%S')
@@ -63,5 +66,6 @@ if __name__ == '__main__':
         class_weight[i] = num_sample/num_class/list(Y_train).count(i)
     print("class_weight: ", class_weight)
     # class_weight = compute_class_weight('balanced', np.unique(Y), Y)  # use as optional argument in the fit function
-    model.fit(X_train_input, Y_train, validation_data = (X_test_input, Y_test), epochs=epochs, batch_size=128, verbose=1, class_weight = class_weight,
-              callbacks=[csv_logger, model_checkpoint])
+    model.fit(X_train_input, Y_train, validation_data = (X_test_input, Y_test), epochs=epochs, batch_size=64, verbose=1, 
+    class_weight = class_weight,
+    callbacks=[csv_logger, model_checkpoint])
