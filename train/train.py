@@ -23,7 +23,7 @@ from model.tf_model import FCN, FCNEmbedded, LSTM, LSTMEmbedded, attention
 from data import loadDataCase
 
 seed = 7
-epoch = 2
+epoch = 200
 batch = 256
 verbose = True
 patience = 20
