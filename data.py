@@ -12,13 +12,21 @@ def loadDataCase1(datasetName, winSize=2000, use="train"):
     print(X.shape, len(Y), len(dictActivities), len(word_id))
     return X, Y, dictActivities, word_id
 
-def loadDataRaw(datasetName, use="train"):
-    X = np.load('datasets/preprocess_raw/{}_X_{}.npy'.format(datasetName, use), allow_pickle=True)
-    Y = np.load('datasets/preprocess_raw/{}_Y_{}.npy'.format(datasetName, use), allow_pickle=True)
+def loadDataCase(datasetName, winSize=2000, use="train", _type="case1"):
+    if _type == "case1":
+        folder="preprocess_cate1"
+    elif _type == "case2":
+        folder="preprocess_cate2"
+    X = np.load('datasets/{}/{}_{}_X_{}.npy'.format(folder, datasetName, winSize, use), allow_pickle=True)
+    Y = np.load('datasets/{}/{}_{}_Y_{}.npy'.format(folder, datasetName, winSize, use), allow_pickle=True)
+    activities_dict_path = "./datasets/activities_dictionary/{}_activity_list.pickle".format(datasetName)
     word_id_path = "./datasets/word_id/{}.pickle".format(datasetName)
     word_id = load_dict(word_id_path)
-    print(X.shape, len(Y), len(word_id))
-    return X, Y, word_id
+    vocab_size = len(word_id)
+    dictActivities = load_dict(activities_dict_path)
+    *listActivities, = dictActivities
+    print(X.shape, len(Y), len(dictActivities), len(word_id), vocab_size)
+    return X, Y, dictActivities, listActivities, vocab_size
 
 seed = 7
 test_size = 0.3
@@ -30,11 +38,13 @@ def loadDataCase2(datasetName, winSize=100, use="train"):
     *listActivities, = dictActivities
     X = np.load('datasets/preprocess_cate2/{}_{}_X_{}.npy'.format(datasetName, winSize, use), allow_pickle=True)
     Y = np.load('datasets/preprocess_cate2/{}_{}_Y_{}.npy'.format(datasetName, winSize, use), allow_pickle=True)
-    # tokenize Y
-    Y1 = Y
-    for i, y in enumerate(Y):
-        Y1[i]=dictActivities[y]
-    Y = np.asarray(Y1)
+    # print("ahihi", set(Y))
+    # # tokenize Y
+    # print("ahuhu", dictActivities)
+    # Y1 = Y
+    # for i, y in enumerate(Y):
+    #     Y1[i]=dictActivities[y]
+    # Y = np.asarray(Y1)
     return X, Y, dictActivities, listActivities
 
 def get_vocab_size(datasetName):
