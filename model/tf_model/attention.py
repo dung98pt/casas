@@ -30,9 +30,10 @@ def model(trainx, trainy, vocab_length):
     nb_classes = trainy.shape[1]
     s1 = trainx.shape[1]
     inputs= Input((s1,))
-    x = Embedding(input_dim=vocab_length+1, output_dim=64, input_length=s1, embeddings_regularizer=keras.regularizers.l2(.001))(inputs)
-    att_in = LSTM(64, return_sequences=True, dropout=0.3, recurrent_dropout=0.2)(x)
+    x = Embedding(input_dim=vocab_length+1, output_dim=64, input_length=s1)(inputs)
+    att_in = LSTM(64, return_sequences=True)(x) # dropout=0.3, recurrent_dropout=0.2
     att_out= attention()(att_in)
+    outputs= Dense(32, activation='softmax', trainable=True)(att_out)
     outputs= Dense(nb_classes, activation='softmax', trainable=True)(att_out)
     model= Model(inputs, outputs,  name="Attention")
     model.summary()

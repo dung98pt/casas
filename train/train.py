@@ -112,6 +112,13 @@ if __name__ == '__main__':
     print(tf.__version__)
     strategy = tf.distribute.MirroredStrategy()
     X_TRAIN, Y_TRAIN, X_VALIDATION, Y_VALIDATION, X_TEST, Y_TEST, listActivities, vocabSize = load_data(datasetName, winSize)
+    # compute_class_weight
+    class_weight = {}
+    num_class = len(listActivities)
+    num_sample = len(Y_TRAIN)
+    for i in set(Y_TRAIN):
+        class_weight[i] = num_sample/num_class/list(Y_TRAIN).count(i)
+    print("class_weight: ", class_weight)
     # attention
     cvscores = []
     bscores = []
@@ -166,13 +173,13 @@ if __name__ == '__main__':
     csv_logger = CSVLogger(csv_path)
     # simple early stopping
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=patience)
-    mc = ModelCheckpoint(best_model_path, monitor="val_loss", mode='max', verbose=1, save_best_only=True)
+    mc = ModelCheckpoint(best_model_path, monitor="val_loss", mode='min', verbose=1, save_best_only=True)
     # Define the per-epoch callback.
 
     #cbs = [csv_logger,tensorboard_cb,mc,es,cm_callback]
     cbs = [csv_logger,tensorboard_cb,mc,es]
     # fit network
-    model.fit(x_train, y_train, epochs=epoch, batch_size=batch, verbose=verbose, callbacks=cbs, validation_data=(x_validation, y_validation))
+    model.fit(x_train, y_train, epochs=epoch, batch_size=batch, verbose=verbose, callbacks=cbs, validation_data=(x_validation, y_validation), class_weight = class_weight)
     # ##########_EVALUATION_##########
     # # load the best model on this k fold
     # saved_model = tf.keras.models.load_model(best_model_path)
