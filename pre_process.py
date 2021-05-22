@@ -32,6 +32,8 @@ def save_activity_dict(input_file, dictActivities):
 		filename = "./datasets/activities_dictionary/aruba_activity_list.pickle"
 	if "cairo" in input_file:
 		filename = "./datasets/activities_dictionary/cairo_activity_list.pickle"
+	if "arrow" in input_file:
+		filename = "./datasets/activities_dictionary/arrow_activity_list.pickle"
 	pickle_out = open(filename,"wb")
 	pickle.dump(dictActivities, pickle_out)
 	pickle_out.close()

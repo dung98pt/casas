@@ -19,18 +19,20 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import balanced_accuracy_score
-from model.tf_model import FCN, FCNEmbedded, LSTM, LSTMEmbedded, attention
+from model.tf_model import FCN, FCNEmbedded, LSTM, LSTMEmbedded, attention, test, att
 from data import loadDataCase
 
 seed = 7
 epoch = 200
-batch = 256
+batch = 1024
 verbose = True
 patience = 20
 np.random.seed(seed)
+winSize = 100
+
 def load_data(datasetName, winSize):
-    X_TRAIN, Y_TRAIN, _, listActivities, vocabSize = loadDataCase(datasetName, winSize, "train", "case1")
-    X_TEST, Y_TEST, _, listActivities, _ = loadDataCase(datasetName, winSize, "test", "case1")
+    X_TRAIN, Y_TRAIN, _, listActivities, vocabSize = loadDataCase(datasetName, winSize, "train", "case2")
+    X_TEST, Y_TEST, _, listActivities, _ = loadDataCase(datasetName, winSize, "test", "case2")
     X_TRAIN, X_VALIDATION, Y_TRAIN, Y_VALIDATION = train_test_split(X_TRAIN, Y_TRAIN, test_size=0.2, random_state=seed, stratify=Y_TRAIN)
     return X_TRAIN, Y_TRAIN, X_VALIDATION, Y_VALIDATION, X_TEST, Y_TEST, listActivities, vocabSize
 
@@ -104,8 +106,7 @@ def plot_confusion_matrix(cm, class_names):
   return figure
 
 if __name__ == '__main__':
-    datasetName = "cairo"
-    winSize = 2000
+    datasetName = "arrow"
     filename = "{}_{}".format(datasetName, winSize)
     # MODELS = ['LSTM_Embedded','LSTM','FCN','FCN_Embedded']
     root_logdir = os.path.join("results", "logs_sliding_windows_over_activity")
@@ -134,7 +135,12 @@ if __name__ == '__main__':
     x_train = X_TRAIN
     x_validation = X_VALIDATION
     x_test = X_TEST
-    model = attention.model(x_train, y_train, vocabSize)
+    # model = attention.model(x_train, y_train, vocabSize)
+    use_model = "FCNEmbedded"
+    if use_model=="att":
+        model = att.model(x_train, y_train, vocabSize)
+    elif use_model == "FCNEmbedded":
+        model = FCNEmbedded.modelFCNEmbedded(x_train, y_train, vocabSize)
     model_name = model.name
     path = os.path.join("logging/log_case_2/results", model_name, "run_"+ filename + "_" + str(currenttime))
     if not os.path.exists(path):
