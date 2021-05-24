@@ -19,7 +19,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import balanced_accuracy_score
-from model.tf_model import FCN, FCNEmbedded, LSTM, LSTMEmbedded, attention, test, att
+from model.tf_model import FCN, FCNEmbedded, LSTM, LSTMEmbedded
 from data import loadDataCase
 
 seed = 7
@@ -28,7 +28,7 @@ batch = 1024
 verbose = True
 patience = 20
 np.random.seed(seed)
-winSize = 100
+winSize = 50
 
 def load_data(datasetName, winSize):
     X_TRAIN, Y_TRAIN, _, listActivities, vocabSize = loadDataCase(datasetName, winSize, "train", "case2")
@@ -137,10 +137,8 @@ if __name__ == '__main__':
     x_test = X_TEST
     # model = attention.model(x_train, y_train, vocabSize)
     use_model = "FCNEmbedded"
-    if use_model=="att":
-        model = att.model(x_train, y_train, vocabSize)
-    elif use_model == "FCNEmbedded":
-        model = FCNEmbedded.modelFCNEmbedded(x_train, y_train, vocabSize)
+    if use_model == "FCNEmbedded":
+      model = FCNEmbedded.modelFCNEmbedded(x_train, y_train, vocabSize)
     model_name = model.name
     path = os.path.join("logging/log_case_2/results", model_name, "run_"+ filename + "_" + str(currenttime))
     if not os.path.exists(path):
