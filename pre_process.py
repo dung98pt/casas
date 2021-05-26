@@ -24,16 +24,9 @@ def clean_and_prepare(df):
 	df['activity'] = df['activity'].replace("begin", None)
 	return df
 
-def save_activity_dict(input_file, dictActivities):
+def save_activity_dict(input_file, dictActivities, dataset_name):
     # lưu vào đường dẫn ./datasets/activities_dictionary
-	if "milan" in input_file:
-		filename = "./datasets/activities_dictionary/milan_activity_list.pickle"
-	if "aruba" in input_file:
-		filename = "./datasets/activities_dictionary/aruba_activity_list.pickle"
-	if "cairo" in input_file:
-		filename = "./datasets/activities_dictionary/cairo_activity_list.pickle"
-	if "arrow" in input_file:
-		filename = "./datasets/activities_dictionary/arrow_activity_list.pickle"
+	filename = "./datasets/activities_dictionary/{}_activity_list.pickle".format(dataset_name)
 	pickle_out = open(filename,"wb")
 	pickle.dump(dictActivities, pickle_out)
 	pickle_out.close()
@@ -121,7 +114,7 @@ if __name__ == '__main__':
     dict_activities = {}
     for i, activity in enumerate(set(label_sentences)):
         dict_activities[activity] = i
-    save_activity_dict(args.dataset_name, dict_activities)
+    save_activity_dict(args.dataset_name, dict_activities, args.dataset_name)
     print(dict_activities)
     label_sentences = [dict_activities[i] for i in label_sentences]
     n_sample = len(sentences)
