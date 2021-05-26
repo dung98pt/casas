@@ -19,8 +19,14 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import balanced_accuracy_score
-from model.tf_model import FCN, FCNEmbedded, LSTM, LSTMEmbedded, attention, test, att
+from model.tf_model import FCN, FCNEmbedded, LSTM, LSTMEmbedded
 from data import loadDataCase
+
+import argparse
+p = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description='')
+p.add_argument('--n', dest='dataset_name', action='store', default='cairo', help='input', required = False)
+p.add_argument('--w', dest='winSize', action='store', default='', help='input', required = False)
+args = p.parse_args()
 
 seed = 7
 epoch = 200
@@ -28,7 +34,8 @@ batch = 1024
 verbose = True
 patience = 20
 np.random.seed(seed)
-winSize = 100
+datasetName = args.dataset_name
+winSize = args.winSize
 
 def load_data(datasetName, winSize):
     X_TRAIN, Y_TRAIN, _, listActivities, vocabSize = loadDataCase(datasetName, winSize, "train", "case2")
@@ -106,7 +113,6 @@ def plot_confusion_matrix(cm, class_names):
   return figure
 
 if __name__ == '__main__':
-    datasetName = "arrow"
     filename = "{}_{}".format(datasetName, winSize)
     # MODELS = ['LSTM_Embedded','LSTM','FCN','FCN_Embedded']
     root_logdir = os.path.join("results", "logs_sliding_windows_over_activity")
@@ -117,6 +123,8 @@ if __name__ == '__main__':
     class_weight = {}
     num_class = len(listActivities)
     num_sample = len(Y_TRAIN)
+    num_classes = max(Y_TRAIN) + 1
+    print("num_classes: ", num_classes)
     for i in set(Y_TRAIN):
         class_weight[i] = num_sample/num_class/list(Y_TRAIN).count(i)
     print("class_weight: ", class_weight)
@@ -127,9 +135,9 @@ if __name__ == '__main__':
     currenttime  = time.strftime("%Y_%m_%d_%H_%M_%S")
 
     # for k in range(len(X_TRAIN)):
-    y_train = to_categorical(Y_TRAIN)
-    y_validation = to_categorical(Y_VALIDATION)
-    y_test = to_categorical(Y_TEST)
+    y_train = to_categorical(Y_TRAIN, num_classes=num_classes)
+    y_validation = to_categorical(Y_VALIDATION, num_classes=num_classes)
+    y_test = to_categorical(Y_TEST, num_classes=num_classes)
     #region prepare model
     ###########_FCN_##########
     x_train = X_TRAIN
@@ -137,9 +145,7 @@ if __name__ == '__main__':
     x_test = X_TEST
     # model = attention.model(x_train, y_train, vocabSize)
     use_model = "FCNEmbedded"
-    if use_model=="att":
-        model = att.model(x_train, y_train, vocabSize)
-    elif use_model == "FCNEmbedded":
+    if use_model == "FCNEmbedded":
         model = FCNEmbedded.modelFCNEmbedded(x_train, y_train, vocabSize)
     model_name = model.name
     path = os.path.join("logging/log_case_2/results", model_name, "run_"+ filename + "_" + str(currenttime))
@@ -186,54 +192,4 @@ if __name__ == '__main__':
     cbs = [csv_logger,tensorboard_cb,mc,es]
     # fit network
     model.fit(x_train, y_train, epochs=epoch, batch_size=batch, verbose=verbose, callbacks=cbs, validation_data=(x_validation, y_validation), class_weight = class_weight)
-    # ##########_EVALUATION_##########
-    # # load the best model on this k fold
-    # saved_model = tf.keras.models.load_model(best_model_path)
-    # # evaluate
-    # score = evaluate_model(saved_model, x_test, y_test, batch)
-    # # store score
-    # cvscores.append(score)
-    # print('Accuracy: %.3f' % (score * 100.0))
-    # ##########_GENERATE_##########
-    # # Make prediction using the model
-    # Y_hat = saved_model.predict(x_test)
-    # Y_pred = np.argmax(Y_hat, axis=1)
-    # Y_pred = Y_pred.reshape(Y_pred.shape[0], 1)
-    # Y_pred = Y_pred.astype('int32')
-    # Y_test = Y_TEST.astype('int32')
-    # report = classification_report(Y_test, Y_pred, target_names=listActivities)
-    # print(report)
-    # text_file = open(report_path, "w")
-    # n = text_file.write(report)
-    # text_file.close()
-    # cm=confusion_matrix(Y_test, Y_pred)
-    # print(cm)
-    # text_file = open(confusion_path, "w")
-    # n = text_file.write("{}".format(cm))
-    # text_file.close()
-    # bscore = balanced_accuracy_score(Y_test, Y_pred)
-    # bscores.append(bscore)
-    # print('Balanced Accuracy: %.3f' % (bscore * 100.0))
-
-    # path = path_attention
-    # print('Model: {}'.format(m))
-    # print('Accuracy: {:.2f}% (+/- {:.2f}%)'.format(np.mean(cvscores)*100, np.std(cvscores)))
-    # print('Balanced Accuracy: {:.2f}% (+/- {:.2f}%)'.format(np.mean(bscores)*100, np.std(bscores)))
-    # # save metrics
-    # csvfile = 'cv_scores_' + m + '_' + filename + '_' + str(currenttime) + '.csv'
-    # with open(os.path.join(path, csvfile), "w") as output:
-    #     writer = csv.writer(output, lineterminator='\n')
-    #     writer.writerow(["accuracy score :"])
-    #     for val in cvscores:
-    #         writer.writerow([val*100])
-    #     writer.writerow([""])
-    #     writer.writerow([np.mean(cvscores)*100])
-    #     writer.writerow([np.std(cvscores)])
-    #     writer.writerow([""])
-    #     writer.writerow(["balanced accuracy score :"])
-    #     for val2 in bscores:
-    #         writer.writerow([val2*100])
-    #     writer.writerow([""])
-    #     writer.writerow([np.mean(bscores)*100])
-    #     writer.writerow([np.std(bscores)])
-    
+    os.system("python evaluate/evaluate_cate2.py --m {} --n {} --w {}".format(best_model_path, datasetName, winSize))

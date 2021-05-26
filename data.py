@@ -29,7 +29,6 @@ def loadDataCase(datasetName, winSize=2000, use="train", _type="case1"):
     return X, Y, dictActivities, listActivities, vocab_size
 
 seed = 7
-test_size = 0.3
 np.random.seed(seed)
 
 def loadDataCase2(datasetName, winSize=100, use="train"):

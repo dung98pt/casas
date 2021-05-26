@@ -8,25 +8,34 @@ import tensorflow as tf
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 from sklearn.metrics import balanced_accuracy_score
-from data import loadDataCase2, get_vocab_size
+from data import loadDataCase
+from tensorflow.keras.utils import *
+import argparse
+p = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description='')
+p.add_argument('--m', dest='best_model_path', action='store', default='', help='input', required = True)
+p.add_argument('--n', dest='dataset_name', action='store', default='cairo', help='input', required = True)
+p.add_argument('--w', dest='winSize', action='store', default='', help='input', required = False)
+args = p.parse_args()
 
 def evaluate_model(model, testX, testy, batch_size):
     # evaluate model
     _, accuracy = model.evaluate(testX, testy, batch_size=batch_size, verbose=0)
     return accuracy
 
-best_model_path = r"logging\log_case_2\results\LSTM_Embedded\run_cairo_100_2021_05_01_21_21_26\LSTM_Embedded_cairo_100_BEST_.h5"
+datasetName = args.dataset_name
+winSize = args.winSize
+best_model_path = args.best_model_path
 saved_model = tf.keras.models.load_model(best_model_path)
 saved_model.summary()
 print(os.path.basename(best_model_path))
 # tên vớ vẩn
 model_name = saved_model.name
 print(model_name)
-datasetName = "cairo"
-winSize = 100
+
+X_TEST, Y_TEST, dictActivities, listActivities, vocab_size= loadDataCase(datasetName, winSize, "test", "case2")
 filename = "{}_{}".format(datasetName, winSize)
 currenttime  = time.strftime("%Y_%m_%d_%H_%M_%S")
-path = os.path.join("logging\\log_case_2\\results", model_name, "run_"+ filename + "_" + str(currenttime))
+path = os.path.join("logging/log_case_2/results", model_name, "run_"+ filename + "_" + str(currenttime))
 ###########_FCN_##########
 if model_name == "FCN":
     path_FCN = path
@@ -44,7 +53,7 @@ if model_name == "LSTM_Embedded":
 if not os.path.exists(path):
     os.makedirs(path)
 # all paths
-root_logdir, vocabSize = get_vocab_size(datasetName)
+root_logdir = os.path.join("results", "logs")
 run_id = model_name + "_" + filename + "_" + str(currenttime)
 log_dir = os.path.join(root_logdir, run_id)
 
@@ -72,9 +81,8 @@ bscores = []
 
 # evaluate
 batch = 1024
-X_TEST, Y_TEST, dictActivities, listActivities = loadDataCase2("cairo", 100, "test")
 x_test = X_TEST
-y_test = to_categorical(Y_TEST)
+y_test = to_categorical(Y_TEST, num_classes=max(Y_TEST)+1)
 score = evaluate_model(saved_model, x_test, y_test, batch)
 # store score
 cvscores.append(score)
