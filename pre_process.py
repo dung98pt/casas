@@ -136,7 +136,7 @@ if __name__ == '__main__':
     if args.cut_test=="False":
         ## Indexization ##
         print("STEP 5: sentences indexization")
-        tokenizer = Tokenizer(filters='!"#$%&()*+,-/:;<=>?@[\\]^_`{|}~\t\n')
+        tokenizer = Tokenizer(filters='!"#$%&()*+,-/:;<=>?@[\\]^`{|}~\t\n')
         tokenizer.fit_on_texts(sentences)
         print("tokenizer: ", tokenizer)
         word_index = tokenizer.word_index
