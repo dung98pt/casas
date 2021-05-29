@@ -32,7 +32,7 @@ print(os.path.basename(best_model_path))
 model_name = saved_model.name
 print(model_name)
 
-X_TEST, Y_TEST, dictActivities, listActivities, vocab_size= loadDataCase(datasetName, winSize, "test", "case2")
+X_TEST, Y_TEST, dictActivities, listActivities, vocab_size= loadDataCase(datasetName, winSize, "test")
 filename = "{}_{}".format(datasetName, winSize)
 currenttime  = time.strftime("%Y_%m_%d_%H_%M_%S")
 path = os.path.join("logging/log_case_2/results", model_name, "run_"+ filename + "_" + str(currenttime))
