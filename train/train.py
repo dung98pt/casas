@@ -38,8 +38,8 @@ datasetName = args.dataset_name
 winSize = args.winSize
 
 def load_data(datasetName, winSize):
-    X_TRAIN, Y_TRAIN, _, listActivities, vocabSize = loadDataCase(datasetName, winSize, "train", "case2")
-    X_TEST, Y_TEST, _, listActivities, _ = loadDataCase(datasetName, winSize, "test", "case2")
+    X_TRAIN, Y_TRAIN, _, listActivities, vocabSize = loadDataCase(datasetName, winSize, "train")
+    X_TEST, Y_TEST, _, listActivities, _ = loadDataCase(datasetName, winSize, "test")
     X_TRAIN, X_VALIDATION, Y_TRAIN, Y_VALIDATION = train_test_split(X_TRAIN, Y_TRAIN, test_size=0.2, random_state=seed, stratify=Y_TRAIN)
     return X_TRAIN, Y_TRAIN, X_VALIDATION, Y_VALIDATION, X_TEST, Y_TEST, listActivities, vocabSize
 

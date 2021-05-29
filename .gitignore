@@ -7,6 +7,8 @@ __pycache__/
 *.so
 
 # them o day
+*.h5
+results/
 logging/
 datasets/activities_dictionary/
 datasets/preprocess_cate1/

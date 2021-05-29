@@ -1,11 +1,9 @@
 import os 
 import numpy as np
-from data import loadDataCase1, loadDataCase2
 from sklearn.utils import compute_class_weight
-from evaluate.keras_evaluate import evaluate_model
-# os.system("python pre_process.py --w1 2000 --w2 100")
-# os.system("python pre_process.py --n arrow --t False --w2 75")
-os.system("python train/train.py --n arrow --w 75")
+
+# os.system("python pre_process.py --n arrow_15  --w 45")
+os.system("python train/train.py --n arrow_15 --w 45")
 # os.system("python train\keras_train.py --n milan --w 2000")
 # X, Y, listActivities = loadDataCase1("cairo", 2000, "train")
 # print(listActivities, len(listActivities), set(Y), len(set(Y)))
