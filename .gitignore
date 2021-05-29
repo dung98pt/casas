@@ -6,6 +6,13 @@ __pycache__/
 # C extensions
 *.so
 
+# them o day
+logging/
+datasets/activities_dictionary/
+datasets/preprocess_cate1/
+datasets/preprocess_cate2/
+datasets/word_id/
+
 # Distribution / packaging
 .Python
 build/
