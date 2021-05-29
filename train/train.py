@@ -32,7 +32,7 @@ seed = 7
 epoch = 200
 batch = 1024
 verbose = True
-patience = 20
+patience = 30
 np.random.seed(seed)
 datasetName = args.dataset_name
 winSize = args.winSize

@@ -1,4 +1,4 @@
-2021-05-07	08:30:00	sensor.0x842e14fffedb848b_temperature	24.20	lam_viec	begin
+2021-05-07	08:30:00	sensor.0x842e14fffedb848b_temperature	24.20	Lam_viec	begin
 2021-05-07	08:30:00	sensor.0x842e14fffedb848b_humidity	56.00		
 2021-05-07	08:31:29.212024	switch.0x00124b001b78ce56	on		
 2021-05-07	08:40:00.014723	automation.zigbee_map_aktualisieren	triggered		
@@ -73,7 +73,7 @@
 2021-05-07	11:30:00	sensor.0x842e14fffedb848b_temperature	24.80		
 2021-05-07	11:30:00	sensor.0x842e14fffedb848b_humidity	49.00		
 2021-05-07	11:40:00.012249	automation.zigbee_map_aktualisieren	triggered		
-2021-05-07	11:41:29.381608	switch.0x00124b001b78ce56	on	lam_viec	end
+2021-05-07	11:41:29.381608	switch.0x00124b001b78ce56	on	Lam_viec	end
 2021-05-07	11:51:29.310319	switch.0x00124b001b78ce56	on	Nghi_trua	begin
 2021-05-07	11:55:00.020229	automation.nhac_atv_an_com	triggered		
 2021-05-07	12:00:00	sensor.0x842e14fffedb848b_temperature	25.00		
@@ -1376,7 +1376,7 @@
 2021-05-10	08:16:33.326170	switch.0x00124b001b78ce56	on		
 2021-05-10	08:20:00.007778	automation.zigbee_map_aktualisieren	triggered		
 2021-05-10	08:26:33.349903	switch.0x00124b001b78ce56	on	Khong_lam_viec	end
-2021-05-10	08:30:00	sensor.0x842e14fffedb848b_humidity	51.50	lam_viec	begin
+2021-05-10	08:30:00	sensor.0x842e14fffedb848b_humidity	51.50	Lam_viec	begin
 2021-05-10	08:30:00	sensor.0x842e14fffedb848b_temperature	24.00		
 2021-05-10	08:31:33.748677	switch.0x00124b001b78ce56	on		
 2021-05-10	08:36:33.705052	switch.0x00124b001b78ce56	on		
@@ -1475,7 +1475,7 @@
 2021-05-10	11:48:35.853730	switch.0xec1bbdfffe871287_l2	off		
 2021-05-10	11:48:35.854488	switch.0xec1bbdfffe871287_l3	off		
 2021-05-10	11:48:35.855298	switch.0xec1bbdfffe871287_l4	off		
-2021-05-10	11:48:35.857301	switch.0xec1bbdfffe871287_l2	on	lam_viec	end
+2021-05-10	11:48:35.857301	switch.0xec1bbdfffe871287_l2	on	Lam_viec	end
 2021-05-10	11:51:33.818295	switch.0x00124b001b78ce56	on	Nghi_trua	begin
 2021-05-10	11:55:00.009048	automation.nhac_atv_an_com	triggered		
 2021-05-10	11:56:33.838779	switch.0x00124b001b78ce56	on		
@@ -2023,7 +2023,7 @@
 2021-05-11	08:15:00	sensor.0x842e14fffedb848b_humidity	52.50		
 2021-05-11	08:20:00.007526	automation.zigbee_map_aktualisieren	triggered		
 2021-05-11	08:21:34.851000	switch.0x00124b001b78ce56	on	Khong_lam_viec	end
-2021-05-11	08:30:00	sensor.0x842e14fffedb848b_temperature	24.00	lam_viec	begin
+2021-05-11	08:30:00	sensor.0x842e14fffedb848b_temperature	24.00	Lam_viec	begin
 2021-05-11	08:30:00	sensor.0x842e14fffedb848b_humidity	52.00		
 2021-05-11	08:31:34.835344	switch.0x00124b001b78ce56	on		
 2021-05-11	08:36:34.783386	switch.0x00124b001b78ce56	on		
@@ -2130,7 +2130,7 @@
 2021-05-11	11:49:35.632074	switch.0xbc33acfffe931149_3	off		
 2021-05-11	11:49:35.632718	switch.0xbc33acfffefe2b1e_1	off		
 2021-05-11	11:49:35.633253	switch.0xbc33acfffec44e08_1	off		
-2021-05-11	11:49:43.606962	automation.set_theme_at_startup	triggered	lam_viec	end
+2021-05-11	11:49:43.606962	automation.set_theme_at_startup	triggered	Lam_viec	end
 2021-05-11	11:50:17.611163	switch.0x00124b00226aa8a4	off	Nghi_trua	begin
 2021-05-11	11:50:17.612881	switch.0x00124b00226aa8a4	on		
 2021-05-11	11:50:18.574546	switch.0xec1bbdfffe871287_l1	off		
@@ -2611,7 +2611,7 @@
 2021-05-12	08:15:00	sensor.0x842e14fffedb848b_temperature	23.80		
 2021-05-12	08:16:36.169686	switch.0x00124b001b78ce56	on		
 2021-05-12	08:20:00.012016	automation.zigbee_map_aktualisieren	triggered	Khong_lam_viec	end
-2021-05-12	08:30:00	sensor.0x842e14fffedb848b_humidity	58.50	lam_viec	begin
+2021-05-12	08:30:00	sensor.0x842e14fffedb848b_humidity	58.50	Lam_viec	begin
 2021-05-12	08:30:00	sensor.0x842e14fffedb848b_temperature	24.20		
 2021-05-12	08:31:36.205800	switch.0x00124b001b78ce56	on		
 2021-05-12	08:36:36.190563	switch.0x00124b001b78ce56	on		
@@ -2736,7 +2736,7 @@
 2021-05-12	11:44:06.375968	switch.switchbot	turn_on		
 2021-05-12	11:44:07.574661	switch.switchbot	on		
 2021-05-12	11:45:00	sensor.0x842e14fffedb848b_temperature	24.40		
-2021-05-12	11:45:00	sensor.0x842e14fffedb848b_humidity	48.50	lam_viec	end
+2021-05-12	11:45:00	sensor.0x842e14fffedb848b_humidity	48.50	Lam_viec	end
 2021-05-12	11:51:36.343723	switch.0x00124b001b78ce56	on	Nghi_trua	begin
 2021-05-12	11:55:00.007002	automation.nhac_atv_an_com	triggered		
 2021-05-12	11:56:36.416274	switch.0x00124b001b78ce56	on		
@@ -3169,7 +3169,7 @@
 2021-05-13	08:15:00	sensor.0x842e14fffedb848b_humidity	50.50		
 2021-05-13	08:20:00.015154	automation.zigbee_map_aktualisieren	triggered		
 2021-05-13	08:21:37.593229	switch.0x00124b001b78ce56	on	Khong_lam_viec	end
-2021-05-13	08:30:00	sensor.0x842e14fffedb848b_temperature	23.00	lam_viec	begin
+2021-05-13	08:30:00	sensor.0x842e14fffedb848b_temperature	23.00	Lam_viec	begin
 2021-05-13	08:30:00	sensor.0x842e14fffedb848b_humidity	51.50		
 2021-05-13	08:36:37.570641	switch.0x00124b001b78ce56	on		
 2021-05-13	08:40:00.012696	automation.zigbee_map_aktualisieren	triggered		
@@ -3456,7 +3456,7 @@
 2021-05-13	11:41:37.788764	switch.0x00124b001b78ce56	on		
 2021-05-13	11:45:00	sensor.0x842e14fffedb848b_humidity	41.00		
 2021-05-13	11:45:00	sensor.0x842e14fffedb848b_temperature	24.00		
-2021-05-13	11:46:37.738846	switch.0x00124b001b78ce56	on	lam_viec	end
+2021-05-13	11:46:37.738846	switch.0x00124b001b78ce56	on	Lam_viec	end
 2021-05-13	11:51:37.777954	switch.0x00124b001b78ce56	on	Nghi_trua	begin
 2021-05-13	11:55:00.009712	automation.nhac_atv_an_com	triggered		
 2021-05-13	11:56:37.745683	switch.0x00124b001b78ce56	on		
@@ -4201,7 +4201,7 @@
 2021-05-14	08:15:00	sensor.0x842e14fffedb848b_temperature	23.60		
 2021-05-14	08:16:38.955525	switch.0x00124b001b78ce56	on		
 2021-05-14	08:20:00.007299	automation.zigbee_map_aktualisieren	triggered	Khong_lam_viec	end
-2021-05-14	08:30:00	sensor.0x842e14fffedb848b_temperature	23.60	lam_viec	begin
+2021-05-14	08:30:00	sensor.0x842e14fffedb848b_temperature	23.60	Lam_viec	begin
 2021-05-14	08:30:00	sensor.0x842e14fffedb848b_humidity	50.50		
 2021-05-14	08:31:38.985724	switch.0x00124b001b78ce56	on		
 2021-05-14	08:36:39.001521	switch.0x00124b001b78ce56	on		
@@ -4275,7 +4275,7 @@
 2021-05-14	11:41:39.128431	switch.0x00124b001b78ce56	on		
 2021-05-14	11:45:00	sensor.0x842e14fffedb848b_humidity	48.50		
 2021-05-14	11:45:00	sensor.0x842e14fffedb848b_temperature	25.00		
-2021-05-14	11:46:39.142123	switch.0x00124b001b78ce56	on	lam_viec	end
+2021-05-14	11:46:39.142123	switch.0x00124b001b78ce56	on	Lam_viec	end
 2021-05-14	11:51:39.438885	switch.0x00124b001b78ce56	on	Nghi_trua	begin
 2021-05-14	11:55:00.015056	automation.nhac_atv_an_com	triggered		
 2021-05-14	11:56:39.225811	switch.0x00124b001b78ce56	on		
@@ -5240,7 +5240,7 @@
 2021-05-17	08:20:00.014840	automation.zigbee_map_aktualisieren	triggered		
 2021-05-17	08:21:43.584250	switch.0x00124b001b78ce56	on		
 2021-05-17	08:26:43.151031	switch.0x00124b001b78ce56	on	Khong_lam_viec	end
-2021-05-17	08:30:00	sensor.0x842e14fffedb848b_humidity	60.50	lam_viec	begin
+2021-05-17	08:30:00	sensor.0x842e14fffedb848b_humidity	60.50	Lam_viec	begin
 2021-05-17	08:30:00	sensor.0x842e14fffedb848b_temperature	24.80		
 2021-05-17	08:31:43.244125	switch.0x00124b001b78ce56	on		
 2021-05-17	08:36:43.157498	switch.0x00124b001b78ce56	on		
@@ -5411,7 +5411,7 @@
 2021-05-17	11:41:43.376900	switch.0x00124b001b78ce56	on		
 2021-05-17	11:45:00	sensor.0x842e14fffedb848b_humidity	41.50		
 2021-05-17	11:45:00	sensor.0x842e14fffedb848b_temperature	24.40		
-2021-05-17	11:46:43.636020	switch.0x00124b001b78ce56	on	lam_viec	end
+2021-05-17	11:46:43.636020	switch.0x00124b001b78ce56	on	Lam_viec	end
 2021-05-17	11:51:43.381754	switch.0x00124b001b78ce56	on	Nghi_trua	begin
 2021-05-17	11:53:20.916834	automation.bao_khi_nhiet_do_tren_25_do	triggered		
 2021-05-17	11:53:20.931577	switch.switchbot	turn_on		
@@ -5842,7 +5842,7 @@
 2021-05-18	08:20:00.012957	automation.zigbee_map_aktualisieren	triggered		
 2021-05-18	08:21:44.944255	switch.0x00124b001b78ce56	on		
 2021-05-18	08:26:44.612128	switch.0x00124b001b78ce56	on	Khong_lam_viec	end
-2021-05-18	08:30:00	sensor.0x842e14fffedb848b_temperature	22.60	lam_viec	begin
+2021-05-18	08:30:00	sensor.0x842e14fffedb848b_temperature	22.60	Lam_viec	begin
 2021-05-18	08:30:00	sensor.0x842e14fffedb848b_humidity	62.00		
 2021-05-18	08:31:44.831233	switch.0x00124b001b78ce56	on		
 2021-05-18	08:36:45.043987	switch.0x00124b001b78ce56	on		
@@ -5947,7 +5947,7 @@
 2021-05-18	11:36:45.183898	switch.0x00124b001b78ce56	on		
 2021-05-18	11:40:00.016171	automation.zigbee_map_aktualisieren	triggered		
 2021-05-18	11:41:44.997979	switch.0x00124b001b78ce56	on		
-2021-05-18	11:46:45.247145	switch.0x00124b001b78ce56	on	lam_viec	end
+2021-05-18	11:46:45.247145	switch.0x00124b001b78ce56	on	Lam_viec	end
 2021-05-18	11:51:45.138965	switch.0x00124b001b78ce56	on	Nghi_trua	begin
 2021-05-18	11:55:00.015710	automation.nhac_atv_an_com	triggered		
 2021-05-18	11:56:45.184178	switch.0x00124b001b78ce56	on		
@@ -6283,7 +6283,7 @@
 2021-05-19	08:20:00.007546	automation.zigbee_map_aktualisieren	triggered		
 2021-05-19	08:21:46.022395	switch.0x00124b001b78ce56	on		
 2021-05-19	08:26:45.973861	switch.0x00124b001b78ce56	on	Khong_lam_viec	end
-2021-05-19	08:30:00	sensor.0x842e14fffedb848b_temperature	24.20	lam_viec	begin
+2021-05-19	08:30:00	sensor.0x842e14fffedb848b_temperature	24.20	Lam_viec	begin
 2021-05-19	08:30:00	sensor.0x842e14fffedb848b_humidity	49.50		
 2021-05-19	08:31:46.050252	switch.0x00124b001b78ce56	on		
 2021-05-19	08:36:45.983454	switch.0x00124b001b78ce56	on		
@@ -6349,7 +6349,7 @@
 2021-05-19	11:40:00.007652	automation.zigbee_map_aktualisieren	triggered		
 2021-05-19	11:41:46.154124	switch.0x00124b001b78ce56	on		
 2021-05-19	11:45:00	sensor.0x842e14fffedb848b_temperature	24.80		
-2021-05-19	11:45:00	sensor.0x842e14fffedb848b_humidity	44.50	lam_viec	end
+2021-05-19	11:45:00	sensor.0x842e14fffedb848b_humidity	44.50	Lam_viec	end
 2021-05-19	11:51:46.154922	switch.0x00124b001b78ce56	on	Nghi_trua	begin
 2021-05-19	11:55:00.009364	automation.nhac_atv_an_com	triggered		
 2021-05-19	11:56:46.279388	switch.0x00124b001b78ce56	on		
@@ -6768,7 +6768,7 @@
 2021-05-20	08:20:00.008241	automation.zigbee_map_aktualisieren	triggered		
 2021-05-20	08:21:47.638291	switch.0x00124b001b78ce56	on		
 2021-05-20	08:26:47.423261	switch.0x00124b001b78ce56	on	Khong_lam_viec	end
-2021-05-20	08:30:00	sensor.0x842e14fffedb848b_temperature	24.20	lam_viec	begin
+2021-05-20	08:30:00	sensor.0x842e14fffedb848b_temperature	24.20	Lam_viec	begin
 2021-05-20	08:30:00	sensor.0x842e14fffedb848b_humidity	49.00		
 2021-05-20	08:31:47.382996	switch.0x00124b001b78ce56	on		
 2021-05-20	08:36:47.597159	switch.0x00124b001b78ce56	on		
@@ -6846,7 +6846,7 @@
 2021-05-20	11:40:00.015688	automation.zigbee_map_aktualisieren	triggered		
 2021-05-20	11:45:00	sensor.0x842e14fffedb848b_temperature	24.20		
 2021-05-20	11:45:00	sensor.0x842e14fffedb848b_humidity	39.50		
-2021-05-20	11:46:47.608100	switch.0x00124b001b78ce56	on	lam_viec	end
+2021-05-20	11:46:47.608100	switch.0x00124b001b78ce56	on	Lam_viec	end
 2021-05-20	11:51:47.575213	switch.0x00124b001b78ce56	on	Nghi_trua	begin
 2021-05-20	11:55:00.009674	automation.nhac_atv_an_com	triggered		
 2021-05-20	11:56:47.598154	switch.0x00124b001b78ce56	on		
@@ -7201,7 +7201,7 @@
 2021-05-21	08:25:13.095358	switch.switchbot	turn_off		
 2021-05-21	08:25:14.396262	switch.switchbot	off		
 2021-05-21	08:29:10.690999	switch.0x00124b001b78ce56	on	Khong_lam_viec	end
-2021-05-21	08:30:00	sensor.0x842e14fffedb848b_temperature	23.80	lam_viec	begin
+2021-05-21	08:30:00	sensor.0x842e14fffedb848b_temperature	23.80	Lam_viec	begin
 2021-05-21	08:30:00	sensor.0x842e14fffedb848b_humidity	48.50		
 2021-05-21	08:34:10.604661	switch.0x00124b001b78ce56	on		
 2021-05-21	08:39:10.336113	switch.0x00124b001b78ce56	on		
@@ -7327,7 +7327,7 @@
 2021-05-21	11:44:10.495202	switch.0x00124b001b78ce56	on		
 2021-05-21	11:45:00	sensor.0x842e14fffedb848b_temperature	24.20		
 2021-05-21	11:45:00	sensor.0x842e14fffedb848b_humidity	41.00		
-2021-05-21	11:49:10.472173	switch.0x00124b001b78ce56	on	lam_viec	end
+2021-05-21	11:49:10.472173	switch.0x00124b001b78ce56	on	Lam_viec	end
 2021-05-21	11:54:10.954548	switch.0x00124b001b78ce56	on	Nghi_trua	begin
 2021-05-21	11:55:00.012961	automation.nhac_atv_an_com	triggered		
 2021-05-21	11:59:10.483891	switch.0x00124b001b78ce56	on		
