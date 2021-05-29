@@ -14,6 +14,7 @@ import argparse
 p = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description='')
 p.add_argument('--m', dest='best_model_path', action='store', default='', help='input', required = True)
 p.add_argument('--n', dest='dataset_name', action='store', default='cairo', help='input', required = True)
+p.add_argument('--c', dest='category', action='store', default='test', help='input', required = True)
 p.add_argument('--w', dest='winSize', action='store', default='', help='input', required = False)
 args = p.parse_args()
 
@@ -32,7 +33,7 @@ print(os.path.basename(best_model_path))
 model_name = saved_model.name
 print(model_name)
 
-X_TEST, Y_TEST, dictActivities, listActivities, vocab_size= loadDataCase(datasetName, winSize, "test")
+X_TEST, Y_TEST, dictActivities, listActivities, vocab_size= loadDataCase(datasetName, winSize, args.category)
 filename = "{}_{}".format(datasetName, winSize)
 currenttime  = time.strftime("%Y_%m_%d_%H_%M_%S")
 path = os.path.join("logging/log_case_2/results", model_name, "run_"+ filename + "_" + str(currenttime))
