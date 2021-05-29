@@ -32,7 +32,7 @@ def sequencesToSentences(df2, win_size):
     sequences = []
     labels = []
     for i in range(len(df2)-win_size):
-        sequence = " ".join(list((df2["sensor"].iloc[i:i+win_size]+df["value"][i:i+win_size]).values))
+        sequence = " ".join(list((df2["sensor"].iloc[i:i+win_size]+df2["value"][i:i+win_size]).values))
         sequences.append(sequence)
         if len(set(df2["activity"].iloc[i:i+win_size]))==1:
             label = df2["activity"].iloc[i]
@@ -70,14 +70,13 @@ if __name__ == '__main__':
         activities_dict_path = "./datasets/activities_dictionary/{}_activity_list.pickle".format(args.dataset_name)
         dict_activities = load_dict(activities_dict_path)
         word_id_path = "./datasets/word_id/{}.pickle".format(args.dataset_name)
-        word_id_path = "./datasets/word_id/{}.pickle".format(args.dataset_name)
         word_id = load_dict(word_id_path)
+
+        #process
         indexed_sentences = [indexing_sequence(word_id, i) for i in sentences]
         label_sentences = [dict_activities[i] for i in label_sentences]
         print("number of sequence:", len(indexed_sentences), len(label_sentences))
         print(indexed_sentences[0])
-        print(indexed_sentences[1])
-        print(indexed_sentences[2])
         print(label_sentences[:10])
         indexed_sentences = np.array(indexed_sentences)
         t = 0
@@ -114,14 +113,24 @@ if __name__ == '__main__':
             
         print("STEP 5: sentences indexization")
         # word indexing và lưu mấy file linh tinh
-        tokenizer = Tokenizer(filters='!"#$%&()*+,-/:;<=>?@[\\]^`{|}~\t\n')
-        tokenizer.fit_on_texts(sentences)
-        word_index = tokenizer.word_index
+        # tokenizer = Tokenizer(filters='!"#$%&()*+,-/:;<=>?@[\\]^`{|}~\t\n')
+        # tokenizer.fit_on_texts(sentences)
+        # word_index = tokenizer.word_index
+        words = set((df["sensor"]+df["value"]).values)
+        word_index = {}
+        for i, word in enumerate(words):
+            word_index[word] = i+1
+
         if not os.path.isdir("./datasets/word_id"):
             os.makedirs("./datasets/word_id")
-        save_word_id("./datasets/word_id/{}.json".format(args.dataset_name), tokenizer)
+        # save_word_id("./datasets/word_id/{}.json".format(args.dataset_name), tokenizer)
         save_dict("./datasets/word_id/{}.pickle".format(args.dataset_name), word_index)
-        indexed_sentences = tokenizer.texts_to_sequences(sentences)
+        print("len_word_index: ", len(word_index), word_index)
+
+        # indexed_sentences = tokenizer.texts_to_sequences(sentences)
+        indexed_sentences = [indexing_sequence(word_index, i) for i in sentences]
+        print(set([len(i.split()) for i in sentences]))
+        print(set([len(i) for i in indexed_sentences]))
         print("number of sequence:", len(indexed_sentences), len(label_sentences))
         #==============================
         #     phải cắt từ chỗ này
