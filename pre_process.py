@@ -34,13 +34,14 @@ def sequencesToSentences(df2, win_size):
     for i in range(len(df2)-win_size):
         sequence = " ".join(list((df2["sensor"].iloc[i:i+win_size]+df["value"][i:i+win_size]).values))
         sequences.append(sequence)
-        if len(set(df2["activity"][i:i+win_size]))==1:
-            label = df2["activity"][i]
+        if len(set(df2["activity"].iloc[i:i+win_size]))==1:
+            label = df2["activity"].iloc[i]
         else:
-            label = df2["activity"][i] + "_" + df2["activity"][i+win_size-1]
+            label = df2["activity"].iloc[i] + "_" + df2["activity"].iloc[i+win_size-1]
         labels.append(label)
     return sequences, labels
 
+no_indexing = []
 def indexing_sequence(word_id, sequence):
     idexed_sequence = []
     for i in sequence.split():
@@ -48,6 +49,7 @@ def indexing_sequence(word_id, sequence):
             idexed_sequence.append(word_id[i])
         except:
             idexed_sequence.append(0)
+            no_indexing.append(i)
     return idexed_sequence
 
 if __name__ == '__main__':
@@ -77,7 +79,14 @@ if __name__ == '__main__':
         print(indexed_sentences[1])
         print(indexed_sentences[2])
         print(label_sentences[:10])
-        np.save("./datasets/processed_data/{}_{}_X_deploy.npy".format( args.dataset_name, args.winSize), np.array(indexed_sentences))
+        indexed_sentences = np.array(indexed_sentences)
+        t = 0
+        for i in indexed_sentences:
+            if 0 in i:
+                t += 1
+        print(t)
+        print(set(no_indexing))
+        np.save("./datasets/processed_data/{}_{}_X_deploy.npy".format( args.dataset_name, args.winSize), indexed_sentences)
         np.save("./datasets/processed_data/{}_{}_Y_deploy.npy".format( args.dataset_name, args.winSize), label_sentences)
     else:
         input_file = "./datasets/{}/data".format(args.dataset_name)
