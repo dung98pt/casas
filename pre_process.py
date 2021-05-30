@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
     #========================
     # SAVE TO NPY
-    ========================
+    # ========================
     np.save("./datasets/processed_data/{}_{}_X_train.npy".format(args.dataset_name, args.winSize), np.array(indexed_train_sentences))
     np.save("./datasets/processed_data/{}_{}_Y_train.npy".format(args.dataset_name, args.winSize), train_label_sentences)
     np.save("./datasets/processed_data/{}_{}_X_test.npy".format( args.dataset_name, args.winSize), np.array(indexed_test_sentences))
