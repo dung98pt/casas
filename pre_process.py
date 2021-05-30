@@ -86,7 +86,7 @@ if __name__ == '__main__':
     # SPLIT DATA
     #========================
     print("STEP 2: SPLIT DATA")
-    split_date = datetime(2021, 5, 19, 8, 30, 0, 0)
+    split_date = datetime(2021, 5, 17, 8, 30, 0, 0)
     df_train = df[df.index<split_date]
     df_test  =  df[df.index>=split_date]
     df_train = df_train.astype('str')
