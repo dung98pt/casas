@@ -11,6 +11,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer, tokenizer_from_json
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from utilities import load_dict
 import json, io 
+from datetime import datetime, date
 
 def save_word_id(path_save, tokenizer_):
     tokenizer_json = tokenizer_.to_json()
@@ -18,8 +19,10 @@ def save_word_id(path_save, tokenizer_):
         f.write(json.dumps(tokenizer_json, ensure_ascii=False))
 
 def load_raw_dataset(input_file):
-	df = pd.read_csv(input_file,sep="\t",header=None,names=["date","time","sensor","value","activity"])
-	return df
+    df = pd.read_csv(input_file,sep="\t",header=None,names=["last_updated", "date","time","sensor","value","activity"])
+    df['last_updated'] = pd.to_datetime(df['last_updated'])
+    df = df.set_index("last_updated")
+    return df
 
 def save_activity_dict(input_file, dictActivities, dataset_name):
     # lưu vào đường dẫn ./datasets/activities_dictionary
@@ -56,88 +59,73 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description='')
     p.add_argument('--n', dest='dataset_name', action='store', default='cairo', help='input', required = True)
     p.add_argument('--w', dest='winSize', action='store', default='', help='input', required = True)
-    p.add_argument('--t', dest='test', action='store', default='test', help='input', required = True)
     args = p.parse_args()
 
-    if args.test=="test":
-        input_file = "./datasets/{}/test".format(args.dataset_name)
-        df = load_raw_dataset(input_file)
-        print(df.head())
-        print(len(df))
-        df = df.astype('str')
-        sentences, label_sentences = sequencesToSentences(df, int(args.winSize))
-        # load dict_activity
-        activities_dict_path = "./datasets/activities_dictionary/{}_activity_list.pickle".format(args.dataset_name)
-        dict_activities = load_dict(activities_dict_path)
-        word_id_path = "./datasets/word_id/{}.pickle".format(args.dataset_name)
-        word_id = load_dict(word_id_path)
+    #========================
+    # START
+    #========================
+    input_file = "./datasets/{}/data".format(args.dataset_name)
+    print("STEP 1: Load dataset + SPLIT DATA")
+    df = load_raw_dataset(input_file)
+    print(df.head())
 
-        #process
-        indexed_sentences = [indexing_sequence(word_id, i) for i in sentences]
-        label_sentences = [dict_activities[i] for i in label_sentences]
-        print("number of sequence:", len(indexed_sentences), len(label_sentences))
-        print(indexed_sentences[0])
-        print(label_sentences[:10])
-        indexed_sentences = np.array(indexed_sentences)
-        t = 0
-        for i in indexed_sentences:
-            if 0 in i:
-                t += 1
-        print(t)
-        print(set(no_indexing))
-        np.save("./datasets/processed_data/{}_{}_X_deploy.npy".format( args.dataset_name, args.winSize), indexed_sentences)
-        np.save("./datasets/processed_data/{}_{}_Y_deploy.npy".format( args.dataset_name, args.winSize), label_sentences)
-    else:
-        input_file = "./datasets/{}/data".format(args.dataset_name)
-        print("STEP 1: Load dataset")
-        df = load_raw_dataset(input_file)
-        df = df.astype('str')
+    #========================
+    # WORD INDEXING DICTIONARY
+    #========================
+    words = set((df["sensor"].astype('str')+df["value"].astype('str')).values)
+    word_index = {}
+    for i, word in enumerate(words):
+        word_index[word] = i+1
 
-        ## Transform sequences of activity in sentences ##
-        print("STEP 4: transform sequences of activity in sentences")
-        sentences, label_sentences = sequencesToSentences(df, int(args.winSize))
-        """
-        Đoạn này vẫn theo thứ tự nè, xử đẹp từ đây nha
-        """
-        dict_activities = {}
-        for i, activity in enumerate(set(label_sentences)):
-            dict_activities[activity] = i
-        save_activity_dict(args.dataset_name, dict_activities, args.dataset_name)
-        print(dict_activities)
-        label_sentences = [dict_activities[i] for i in label_sentences]
-        n_sample = len(sentences)
-        n_activity = len(set(label_sentences))
-        print("n_sample: ", n_sample, "n_activity: ", n_activity)  
-        for l in list(set(label_sentences)):
-            print(l, label_sentences.count(l))
-            
-        print("STEP 5: sentences indexization")
-        # word indexing và lưu mấy file linh tinh
-        # tokenizer = Tokenizer(filters='!"#$%&()*+,-/:;<=>?@[\\]^`{|}~\t\n')
-        # tokenizer.fit_on_texts(sentences)
-        # word_index = tokenizer.word_index
-        words = set((df["sensor"]+df["value"]).values)
-        word_index = {}
-        for i, word in enumerate(words):
-            word_index[word] = i+1
+    if not os.path.isdir("./datasets/word_id"):
+        os.makedirs("./datasets/word_id")
+    save_dict("./datasets/word_id/{}.pickle".format(args.dataset_name), word_index)
+    print("len_word_index: ", len(word_index), word_index)
 
-        if not os.path.isdir("./datasets/word_id"):
-            os.makedirs("./datasets/word_id")
-        # save_word_id("./datasets/word_id/{}.json".format(args.dataset_name), tokenizer)
-        save_dict("./datasets/word_id/{}.pickle".format(args.dataset_name), word_index)
-        print("len_word_index: ", len(word_index), word_index)
+    #========================
+    # SPLIT DATA
+    #========================
+    print("STEP 2: SPLIT DATA")
+    split_date = datetime(2021, 5, 19, 8, 30, 0, 0)
+    df_train = df[df.index<split_date]
+    df_test  =  df[df.index>=split_date]
+    df_train = df_train.astype('str')
+    df_test  = df_test.astype('str')
+    
 
-        # indexed_sentences = tokenizer.texts_to_sequences(sentences)
-        indexed_sentences = [indexing_sequence(word_index, i) for i in sentences]
-        print(set([len(i.split()) for i in sentences]))
-        print(set([len(i) for i in indexed_sentences]))
-        print("number of sequence:", len(indexed_sentences), len(label_sentences))
-        #==============================
-        #     phải cắt từ chỗ này
-        #==============================
-        indexed_sentences_train, indexed_sentences_test, label_sentences_train, label_sentences_test = train_test_split(indexed_sentences, label_sentences, test_size=0.2, random_state=7, stratify=label_sentences)
-        print("label_sentences_test", len(label_sentences_test), len(set(label_sentences_test)))
-        np.save("./datasets/processed_data/{}_{}_X_train.npy".format(args.dataset_name, args.winSize), np.array(indexed_sentences_train))
-        np.save("./datasets/processed_data/{}_{}_Y_train.npy".format(args.dataset_name, args.winSize), label_sentences_train)
-        np.save("./datasets/processed_data/{}_{}_X_test.npy".format( args.dataset_name, args.winSize), np.array(indexed_sentences_test))
-        np.save("./datasets/processed_data/{}_{}_Y_test.npy".format( args.dataset_name, args.winSize), label_sentences_test)
+    #========================
+    # WORD INDEXING TRAIN + LABEL DICTIONARY
+    #========================
+    print("STEP 3: WORD INDEXING TRAIN + LABEL DICTIONARY")
+    dict_activities = {}
+    train_sentences, train_label_sentences = sequencesToSentences(df_train, int(args.winSize))
+    # create label dictionary
+    for i, activity in enumerate(set(train_label_sentences)):
+        dict_activities[activity] = i
+    save_activity_dict(args.dataset_name, dict_activities, args.dataset_name)
+    # convert categoriy
+    train_label_sentences = [dict_activities[i] for i in train_label_sentences]
+    print(dict_activities)
+    print("n_sample: ", len(train_sentences), "n_activity: ", len(set(train_label_sentences)))  
+    for l in list(set(train_label_sentences)):
+        print(l, train_label_sentences.count(l))
+    
+    # indexing trainset
+    indexed_train_sentences = [indexing_sequence(word_index, i) for i in train_sentences]
+    print("TRAIN SET:", len(indexed_train_sentences), len(train_label_sentences))
+    #========================
+    # WORD INDEXING TEST + LABEL DICTIONARY
+    #========================
+    test_sentences, test_label_sentences = sequencesToSentences(df_test, int(args.winSize))
+    test_label_sentences = [dict_activities[i] for i in test_label_sentences]
+    indexed_test_sentences = [indexing_sequence(word_index, i) for i in test_sentences]
+    print("TEST SET:", len(indexed_test_sentences), len(test_label_sentences))
+    print(no_indexing)
+
+    #========================
+    # SAVE TO NPY
+    ========================
+    np.save("./datasets/processed_data/{}_{}_X_train.npy".format(args.dataset_name, args.winSize), np.array(indexed_train_sentences))
+    np.save("./datasets/processed_data/{}_{}_Y_train.npy".format(args.dataset_name, args.winSize), train_label_sentences)
+    np.save("./datasets/processed_data/{}_{}_X_test.npy".format( args.dataset_name, args.winSize), np.array(indexed_test_sentences))
+    np.save("./datasets/processed_data/{}_{}_Y_test.npy".format( args.dataset_name, args.winSize), test_label_sentences)

@@ -194,4 +194,3 @@ if __name__ == '__main__':
     model.fit(x_train, y_train, epochs=50, batch_size=batch, verbose=verbose, callbacks=[csv_logger,tensorboard_cb,mc], validation_data=(x_validation, y_validation), class_weight = class_weight)
     model.fit(x_train, y_train, epochs=epoch-50, batch_size=batch, verbose=verbose, callbacks=cbs, validation_data=(x_validation, y_validation), class_weight = class_weight)
     os.system("python evaluate/evaluate_cate2.py --m {} --n {} --w {} --c {}".format(best_model_path, datasetName, winSize, "test"))
-    os.system("python evaluate/evaluate_cate2.py --m {} --n {} --w {} --c {}".format(best_model_path, datasetName, winSize, "deploy"))
