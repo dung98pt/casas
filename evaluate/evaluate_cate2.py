@@ -121,6 +121,7 @@ print('Balanced Accuracy: %.3f' % (bscore * 100.0))
 print('Model: {}'.format(model_name))
 print('Accuracy: {:.2f}% (+/- {:.2f}%)'.format(np.mean(cvscores)*100, np.std(cvscores)))
 print('Balanced Accuracy: {:.2f}% (+/- {:.2f}%)'.format(np.mean(bscores)*100, np.std(bscores)))
+print('Transition Accuracy: %.2f' % (transition_score * 100.0))
 
 path = "logging/log_case_2/"
 # save metrics
