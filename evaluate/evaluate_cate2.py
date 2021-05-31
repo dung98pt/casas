@@ -33,7 +33,7 @@ print(os.path.basename(best_model_path))
 model_name = saved_model.name
 print(model_name)
 
-X_TEST, Y_TEST, dictActivities, listActivities, vocab_size= loadDataCase(datasetName, winSize, args.category)
+X_TEST, Y_TEST, transition_mask, dictActivities, listActivities, vocab_size= loadDataCase(datasetName, winSize, args.category, True)
 filename = "{}_{}".format(datasetName, winSize)
 currenttime  = time.strftime("%Y_%m_%d_%H_%M_%S")
 path = os.path.join("logging/log_case_2/results", model_name, "run_"+ filename + "_" + str(currenttime))
@@ -88,6 +88,15 @@ score = evaluate_model(saved_model, x_test, y_test, batch)
 # store score
 cvscores.append(score)
 print('Accuracy: %.3f' % (score * 100.0))
+
+# transition score
+transition_x = np.concatenate([x_test[i].reshape(1, x_test[i].shape[0]) for i in transition_mask if i], axis=0)
+transition_y = np.concatenate([y_test[i].reshape(1, y_test[i].shape[0]) for i in transition_mask if i], axis=0)
+transition_score = evaluate_model(saved_model, transition_x, transition_y, batch)
+print("transition_x: {}, transition_y: {}".format(transition_x.shape, transition_y.shape))
+# store score
+# cvscores.append(score)
+print('Transition Accuracy: %.3f' % (transition_score * 100.0))
 ##########_GENERATE_##########
 # Make prediction using the model
 Y_hat = saved_model.predict(x_test)

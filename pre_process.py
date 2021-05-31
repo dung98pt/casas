@@ -31,18 +31,29 @@ def save_activity_dict(input_file, dictActivities, dataset_name):
 	pickle.dump(dictActivities, pickle_out)
 	pickle_out.close()
 
-def sequencesToSentences(df2, win_size):
+def sequencesToSentences(df2, win_size, transition=False):
     sequences = []
     labels = []
+    mask = []
     for i in range(len(df2)-win_size):
         sequence = " ".join(list((df2["sensor"].iloc[i:i+win_size]+df2["value"][i:i+win_size]).values))
         sequences.append(sequence)
-        if len(set(df2["activity"].iloc[i:i+win_size]))==1:
+        list_activity = list(df2["activity"].iloc[i:i+win_size])
+        if len(set(list_activity))==1:
             label = df2["activity"].iloc[i]
+            mask.append(0)
         else:
-            label = df2["activity"].iloc[i] + "_" + df2["activity"].iloc[i+win_size-1]
+            set_activity = list(set(list_activity))
+            if list_activity.count(set_activity[0]) >= list_activity.count(set_activity[1]):
+                label = set_activity[0]
+            else:
+                label = set_activity[1]
+            mask.append(1)
         labels.append(label)
+    if transition:
+        return sequences, labels, mask
     return sequences, labels
+    
 
 no_indexing = []
 def indexing_sequence(word_id, sequence):
@@ -116,7 +127,7 @@ if __name__ == '__main__':
     #========================
     # WORD INDEXING TEST + LABEL DICTIONARY
     #========================
-    test_sentences, test_label_sentences = sequencesToSentences(df_test, int(args.winSize))
+    test_sentences, test_label_sentences, test_transition_mask = sequencesToSentences(df_test, int(args.winSize), True)
     test_label_sentences = [dict_activities[i] for i in test_label_sentences]
     indexed_test_sentences = [indexing_sequence(word_index, i) for i in test_sentences]
     print("TEST SET:", len(indexed_test_sentences), len(test_label_sentences))
@@ -129,3 +140,4 @@ if __name__ == '__main__':
     np.save("./datasets/processed_data/{}_{}_Y_train.npy".format(args.dataset_name, args.winSize), train_label_sentences)
     np.save("./datasets/processed_data/{}_{}_X_test.npy".format( args.dataset_name, args.winSize), np.array(indexed_test_sentences))
     np.save("./datasets/processed_data/{}_{}_Y_test.npy".format( args.dataset_name, args.winSize), test_label_sentences)
+    np.save("./datasets/processed_data/{}_{}_Y_mask.npy".format( args.dataset_name, args.winSize), test_transition_mask)
