@@ -44,10 +44,11 @@ def sequencesToSentences(df2, win_size, transition=False):
             mask.append(0)
         else:
             set_activity = list(set(list_activity))
-            if list_activity.count(set_activity[0]) >= list_activity.count(set_activity[1]):
-                label = set_activity[0]
-            else:
-                label = set_activity[1]
+            # if list_activity.count(set_activity[0]) >= list_activity.count(set_activity[1]):
+            #     label = set_activity[0]
+            # else:
+            #     label = set_activity[1]
+            label = df2["activity"].iloc[i+win_size-1]
             mask.append(1)
         labels.append(label)
     if transition:
