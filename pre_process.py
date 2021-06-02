@@ -71,6 +71,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description='')
     p.add_argument('--n', dest='dataset_name', action='store', default='cairo', help='input', required = True)
     p.add_argument('--w', dest='winSize', action='store', default='', help='input', required = True)
+    p.add_argument('--d', dest='deploy', action='store', default='false', help='input', required = True)
     args = p.parse_args()
 
     #========================
@@ -84,15 +85,18 @@ if __name__ == '__main__':
     #========================
     # WORD INDEXING DICTIONARY
     #========================
-    words = set((df["sensor"].astype('str')+df["value"].astype('str')).values)
-    word_index = {}
-    for i, word in enumerate(words):
-        word_index[word] = i+1
+    if args.deploy=="false":
+        words = set((df["sensor"].astype('str')+df["value"].astype('str')).values)
+        word_index = {}
+        for i, word in enumerate(words):
+            word_index[word] = i+1
 
-    if not os.path.isdir("./datasets/word_id"):
-        os.makedirs("./datasets/word_id")
-    save_dict("./datasets/word_id/{}.pickle".format(args.dataset_name), word_index)
-    print("len_word_index: ", len(word_index), word_index)
+        if not os.path.isdir("./datasets/word_id"):
+            os.makedirs("./datasets/word_id")
+        save_dict("./datasets/word_id/{}.pickle".format(args.dataset_name), word_index)
+        print("len_word_index: ", len(word_index), word_index)
+    else:
+        word_index = load_dict("./datasets/word_id/{}.pickle".format(args.dataset_name))
 
     #========================
     # SPLIT DATA
@@ -112,9 +116,12 @@ if __name__ == '__main__':
     dict_activities = {}
     train_sentences, train_label_sentences = sequencesToSentences(df_train, int(args.winSize))
     # create label dictionary
-    for i, activity in enumerate(set(train_label_sentences)):
-        dict_activities[activity] = i
-    save_activity_dict(args.dataset_name, dict_activities, args.dataset_name)
+    if args.deploy=="false":
+        for i, activity in enumerate(set(train_label_sentences)):
+            dict_activities[activity] = i
+        save_activity_dict(args.dataset_name, dict_activities, args.dataset_name)
+    else:
+        dict_activities = load_dict("./datasets/activities_dictionary/{}_activity_list.pickle".format(args.dataset_name))
     # convert categoriy
     train_label_sentences = [dict_activities[i] for i in train_label_sentences]
     print(dict_activities)

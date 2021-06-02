@@ -3,6 +3,7 @@ import pickle
 def load_dict(path_load):
     pickle_in = open(path_load,"rb")
     dictActivities = pickle.load(pickle_in)
+    print("dict {} is loaded!".format(path_load))
     return dictActivities
 
 def save_dict(path_save, dict):
