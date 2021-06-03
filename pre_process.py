@@ -31,7 +31,8 @@ def save_activity_dict(input_file, dictActivities, dataset_name):
 	pickle.dump(dictActivities, pickle_out)
 	pickle_out.close()
 
-def sequencesToSentences(df2, win_size, transition=False):
+def sequencesToSentences(df2, win_size, index_state, transition=False):
+    print("index_state: ", index_state)
     sequences = []
     labels = []
     mask = []
@@ -44,11 +45,13 @@ def sequencesToSentences(df2, win_size, transition=False):
             mask.append(0)
         else:
             set_activity = list(set(list_activity))
-            # if list_activity.count(set_activity[0]) >= list_activity.count(set_activity[1]):
-            #     label = set_activity[0]
-            # else:
-            #     label = set_activity[1]
-            label = df2["activity"].iloc[i+win_size-1]
+            if index_state=="mid":
+                if list_activity.count(set_activity[0]) > list_activity.count(set_activity[1]):
+                    label = set_activity[0]
+                else:
+                    label = set_activity[1]
+            else:
+                label = df2["activity"].iloc[i+win_size + int(index_state)]
             mask.append(1)
         labels.append(label)
     if transition:
@@ -71,6 +74,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description='')
     p.add_argument('--n', dest='dataset_name', action='store', default='cairo', help='input', required = True)
     p.add_argument('--w', dest='winSize', action='store', default='', help='input', required = True)
+    p.add_argument('--i', dest='index_state', action='store', default='mid', help='input', required = True)
     p.add_argument('--d', dest='deploy', action='store', default='false', help='input', required = True)
     args = p.parse_args()
 
@@ -114,7 +118,7 @@ if __name__ == '__main__':
     #========================
     print("STEP 3: WORD INDEXING TRAIN + LABEL DICTIONARY")
     dict_activities = {}
-    train_sentences, train_label_sentences = sequencesToSentences(df_train, int(args.winSize))
+    train_sentences, train_label_sentences = sequencesToSentences(df_train, int(args.winSize), args.index_state)
     # create label dictionary
     if args.deploy=="false":
         for i, activity in enumerate(set(train_label_sentences)):
@@ -135,7 +139,7 @@ if __name__ == '__main__':
     #========================
     # WORD INDEXING TEST + LABEL DICTIONARY
     #========================
-    test_sentences, test_label_sentences, test_transition_mask = sequencesToSentences(df_test, int(args.winSize), True)
+    test_sentences, test_label_sentences, test_transition_mask = sequencesToSentences(df_test, int(args.winSize), args.index_state, True)
     test_label_sentences = [dict_activities[i] for i in test_label_sentences]
     indexed_test_sentences = [indexing_sequence(word_index, i) for i in test_sentences]
     print("TEST SET:", len(indexed_test_sentences), len(test_label_sentences))
