@@ -26,6 +26,7 @@ import argparse
 p = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description='')
 p.add_argument('--n', dest='dataset_name', action='store', default='cairo', help='input', required = False)
 p.add_argument('--w', dest='winSize', action='store', default='', help='input', required = False)
+p.add_argument('--m', dest='model', action='store', default='FCNEmbedded', help='FCNEmbedded LSTM_Embedded FCN LSTM', required = True)
 args = p.parse_args()
 
 seed = 7
@@ -36,6 +37,7 @@ patience = 30
 np.random.seed(seed)
 datasetName = args.dataset_name
 winSize = args.winSize
+use_model = args.model
 
 def load_data(datasetName, winSize):
     X_TRAIN, Y_TRAIN, _, listActivities, vocabSize = loadDataCase(datasetName, winSize, "train")
@@ -140,13 +142,29 @@ if __name__ == '__main__':
     y_test = to_categorical(Y_TEST, num_classes=num_classes)
     #region prepare model
     ###########_FCN_##########
-    x_train = X_TRAIN
-    x_validation = X_VALIDATION
-    x_test = X_TEST
     # model = attention.model(x_train, y_train, vocabSize)
-    use_model = "FCNEmbedded"
+    
     if use_model == "FCNEmbedded":
+        x_train = X_TRAIN
+        x_validation = X_VALIDATION
+        x_test = X_TEST
         model = FCNEmbedded.modelFCNEmbedded(x_train, y_train, vocabSize)
+    elif use_model == "LSTM":
+        x_train = X_TRAIN.reshape(X_TRAIN.shape[0],X_TRAIN.shape[1],1)
+        x_validation = X_VALIDATION.reshape(X_VALIDATION.shape[0],X_VALIDATION.shape[1],1)
+        x_test = X_TEST.reshape(X_TEST.shape[0],X_TEST.shape[1],1)
+        model = LSTM.model(x_train,y_train)
+    elif use_model == "LSTM_Embedded":
+        x_train =  X_TRAIN
+        x_validation = X_VALIDATION
+        x_test = X_TEST
+        model = LSTMEmbedded.model(x_train,y_train,vocabSize)
+    elif use_model == "FCN":
+        x_train = X_TRAIN.reshape(X_TRAIN.shape[0],X_TRAIN.shape[1],1)
+        x_validation = X_VALIDATION.reshape(X_VALIDATION.shape[0],X_VALIDATION.shape[1],1)
+        x_test = X_TEST.reshape(X_TEST.shape[0],X_TEST.shape[1],1)
+        model = FCN.model(x_train, y_train)
+
     model_name = model.name
     path = os.path.join("logging/log_case_2/results", model_name, "run_"+ filename + "_" + str(currenttime))
     if not os.path.exists(path):
