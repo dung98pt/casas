@@ -90,11 +90,23 @@ cvscores.append(score)
 print('Accuracy: %.3f' % (score * 100.0))
 
 # transition score
-print(transition_mask)
+print(sum(transition_mask))
 transition_x = np.concatenate([X_TEST[i].reshape(1, -1) for i, m in enumerate(transition_mask) if m], axis=0)
-transition_y = to_categorical([Y_TEST[i] for i, m in enumerate(transition_mask) if m], num_classes=max(Y_TEST)+1)
-transition_score = evaluate_model(saved_model, transition_x, transition_y, batch)
-print("transition_x: {}, transition_y: {}".format(transition_x.shape, transition_y.shape))
+transition_y = [Y_TEST[i] for i, m in enumerate(transition_mask) if m]
+predicted_transaction_y = saved_model.predict(transition_x)
+predicted_transaction_y = np.argmax(predicted_transaction_y, axis=1)
+
+# winSize
+transition_pred = []
+for pred_y, y in zip(predicted_transaction_y, transition_y):
+    if int(pred_y)==int(y):
+        transition_pred.append(0)
+    else:
+        transition_pred.append(1)
+transition_pred = np.array(transition_pred).reshape(-1, int(winSize)-1)
+transition_score = evaluate_model(saved_model, transition_x, to_categorical(transition_y, num_classes=max(Y_TEST)+1), batch)
+print("transition_x: {}, transition_y: {}".format(transition_x.shape, len(transition_y)))
+
 # store score
 # cvscores.append(score)
 print('Transition Accuracy: %.3f' % (transition_score * 100.0))
@@ -123,6 +135,7 @@ print('Model: {}'.format(model_name))
 print('Accuracy: {:.2f}% (+/- {:.2f}%)'.format(np.mean(cvscores)*100, np.std(cvscores)))
 print('Balanced Accuracy: {:.2f}% (+/- {:.2f}%)'.format(np.mean(bscores)*100, np.std(bscores)))
 print('Transition Accuracy: %.2f' % (transition_score * 100.0))
+print(np.sum(transition_pred, axis=0), len(transition_pred))
 
 path = "logging/log_case_2/"
 # save metrics
